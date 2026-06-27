@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% set title = 'Dashboard' %}
+{% block content %}
+<div class="card p-3 p-md-4 mb-4">
+  <div class="row g-3 align-items-center">
+    <div class="col-12 col-lg-7">
+      <img class="hh-logo-sm mb-3" src="{{ url_for('static', filename='branding/herdhub-logo.png') }}" alt="HerdHUB logo">
+      <h2 class="h4 mb-2">Livestock Operations Overview</h2>
+      <p class="text-secondary mb-0">A live view of animals, treatments, tasks, and operational alerts.</p>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Weather Widget</h6>
+          <span class="badge text-bg-light">Placeholder</span>
+        </div>
+        <p class="text-secondary small mt-2 mb-0">Connect live weather data in Phase 3.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  {% for label, value in [('Cattle', total_by_species['cattle']), ('Sheep', total_by_species['sheep']), ('Goats', total_by_species['goat'])] %}
+  <div class="col-12 col-md-4">
+    <div class="card hh-kpi-card p-3">
+      <h6 class="text-muted">{{ label }}</h6>
+      <h2 class="display-6">{{ value }}</h2>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-4">
+    <a class="card p-3 text-decoration-none" href="{{ url_for('reports') }}">
+      <h6 class="text-muted">Reports</h6>
+      <h4 class="mb-0">View Reports</h4>
+    </a>
+  </div>
+  <div class="col-12 col-md-4">
+    <a class="card p-3 text-decoration-none" href="{{ url_for('diary_list') }}">
+      <h6 class="text-muted">Daily Farm Diary</h6>
+      <h4 class="mb-0">Open Diary</h4>
+    </a>
+  </div>
+  <div class="col-12 col-md-4">
+    <a class="card p-3 text-decoration-none" href="{{ url_for('diary_new') }}">
+      <h6 class="text-muted">Quick Entry</h6>
+      <h4 class="mb-0">Add Diary Entry</h4>
+    </a>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5 class="mb-3">Livestock Summary</h5>
+      {% set total = total_by_species['cattle'] + total_by_species['sheep'] + total_by_species['goat'] %}
+      {% for label, value in [('Cattle', total_by_species['cattle']), ('Sheep', total_by_species['sheep']), ('Goats', total_by_species['goat'])] %}
+      {% set pct = ((value / total) * 100) if total else 0 %}
+      <div class="mb-2 d-flex justify-content-between small"><span>{{ label }}</span><strong>{{ value }}</strong></div>
+      <div class="progress mb-3" role="progressbar" aria-label="{{ label }} share" aria-valuenow="{{ pct|int }}" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: {{ pct }}%"></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card p-3 h-100">
+      <h5 class="mb-3">Operational Alerts</h5>
+      <ul class="list-group list-group-flush">
+        {% for item in notifications[:5] %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <span>{{ item.title }}: {{ item.message }}</span>
+          <span class="badge text-bg-light">{{ item.type }}</span>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">No alerts available.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Notifications</h5>
+        <span class="badge bg-primary">{{ notification_count }}</span>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for item in notifications %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div>
+            <div class="fw-semibold">{{ item.title }}</div>
+            <div class="small text-muted">{{ item.message }}</div>
+          </div>
+          <span class="badge bg-{{ item.badge }}">{{ item.type }}</span>
+        </li>
+        {% else %}
+        <li class="list-group-item text-muted">No alerts right now.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5>Animals by status</h5>
+      <ul class="list-group list-group-flush">
+        {% for status, count in by_status.items() %}
+        <li class="list-group-item d-flex justify-content-between"><span>{{ status|title }}</span><strong>{{ count }}</strong></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5>Animals by camp</h5>
+      <ul class="list-group list-group-flush">
+        {% for row in camp_totals %}
+        <li class="list-group-item d-flex justify-content-between"><span>{{ row.camp.name }}</span><strong>{{ row.count }}</strong></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5>Upcoming tasks</h5>
+      <ul class="list-group list-group-flush">
+        {% for task in upcoming_tasks %}
+        <li class="list-group-item">{{ task.title }} <span class="text-muted">({{ task.due_date }})</span></li>
+        {% else %}
+        <li class="list-group-item text-muted">No upcoming tasks.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5>Overdue tasks</h5>
+      <ul class="list-group list-group-flush">
+        {% for task in overdue_tasks %}
+        <li class="list-group-item">{{ task.title }} <span class="text-muted">({{ task.due_date }})</span></li>
+        {% else %}
+        <li class="list-group-item text-muted">No overdue tasks.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Quick actions</h5>
+      </div>
+      <div class="row g-2">
+        <div class="col-6 col-md-3"><a class="btn btn-outline-primary w-100" href="{{ url_for('animals_list') }}">Add Animal</a></div>
+        <div class="col-6 col-md-3"><a class="btn btn-outline-success w-100" href="{{ url_for('births_list') }}">Add Birth</a></div>
+        <div class="col-6 col-md-3"><a class="btn btn-outline-danger w-100" href="{{ url_for('deaths_list') }}">Add Death</a></div>
+        <div class="col-6 col-md-3"><a class="btn btn-outline-warning w-100" href="{{ url_for('movements_list') }}">Add Movement</a></div>
+        <div class="col-6 col-md-3"><a class="btn btn-outline-info w-100" href="{{ url_for('health_list') }}">Add Treatment</a></div>
+        <div class="col-6 col-md-3"><a class="btn btn-outline-secondary w-100" href="{{ url_for('tasks_list') }}">Add Task</a></div>
+        <div class="col-6 col-md-3"><a class="btn btn-outline-dark w-100" href="{{ url_for('diary_list') }}">Add Diary</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5>Recent activity</h5>
+      <ul class="list-group list-group-flush">
+        {% for movement in movements %}
+        <li class="list-group-item">{{ movement.date }} - {{ movement.subject_name }} moved from {{ movement.from_camp.name if movement.from_camp else 'unknown' }} to {{ movement.to_camp.name if movement.to_camp else 'unknown' }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card p-3">
+      <h5>Treatments in progress</h5>
+      <ul class="list-group list-group-flush">
+        {% for record in active_treatments %}
+        <li class="list-group-item">{{ record.subject_name }} - {{ record.treatment_type }} (next due {{ record.next_due_date }})</li>
+        {% else %}
+        <li class="list-group-item text-muted">No active treatments.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

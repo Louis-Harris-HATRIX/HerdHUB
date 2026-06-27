@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% set title = 'Group Register' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-3">
+      <h5>{{ 'Edit group' if item else 'Add group' }}</h5>
+      <form method="post" action="{{ url_for('groups_edit', group_id=item.id) if item else url_for('groups_new') }}">
+        <div class="mb-2"><input class="form-control" name="name" placeholder="Group name" value="{{ item.name if item else '' }}" required></div>
+        <div class="mb-2"><select class="form-select" name="species"><option value="cattle" {% if item and item.species=='cattle' %}selected{% endif %}>Cattle</option><option value="sheep" {% if item and item.species=='sheep' %}selected{% endif %}>Sheep</option><option value="goat" {% if item and item.species=='goat' %}selected{% endif %}>Goat</option></select></div>
+        <div class="mb-2"><input class="form-control" type="number" name="number_of_animals" placeholder="Number of animals" value="{{ item.number_of_animals if item else '' }}"></div>
+        <div class="mb-2"><select class="form-select" name="camp_id"><option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if item and item.camp_id == camp.id %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></div>
+        <div class="mb-2"><input class="form-control" name="age_class" placeholder="Age class" value="{{ item.age_class if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="purpose" placeholder="Purpose" value="{{ item.purpose if item else '' }}"></div>
+        <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        <button class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Group list</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          <select class="form-select" name="species">
+            <option value="">All species</option>
+            <option value="cattle" {% if species_filter=='cattle' %}selected{% endif %}>Cattle</option>
+            <option value="sheep" {% if species_filter=='sheep' %}selected{% endif %}>Sheep</option>
+            <option value="goat" {% if species_filter=='goat' %}selected{% endif %}>Goat</option>
+          </select>
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Name</th><th>Species</th><th>Count</th><th>Camp</th><th>Purpose</th><th></th></tr></thead>
+          <tbody>
+            {% for group in groups %}
+            <tr>
+              <td>{{ group.name }}</td>
+              <td>{{ group.species }}</td>
+              <td>{{ group.number_of_animals }}</td>
+              <td>{{ group.camp.name if group.camp else '-' }}</td>
+              <td>{{ group.purpose or '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('groups_edit', group_id=group.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('groups_delete', group_id=group.id) }}" style="display:inline" onsubmit="return confirm('Mark this group as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% set title = 'Reports' %}
+{% block content %}
+<form class="row g-2 mb-4" method="get">
+  <div class="col-12 col-md-3">
+    <input type="date" class="form-control" name="start_date" value="{{ start_date or '' }}" />
+  </div>
+  <div class="col-12 col-md-3">
+    <input type="date" class="form-control" name="end_date" value="{{ end_date or '' }}" />
+  </div>
+  <div class="col-12 col-md-2">
+    <select class="form-select" name="species">
+      <option value="">All species</option>
+      <option value="cattle" {% if species_filter == 'cattle' %}selected{% endif %}>Cattle</option>
+      <option value="sheep" {% if species_filter == 'sheep' %}selected{% endif %}>Sheep</option>
+      <option value="goat" {% if species_filter == 'goat' %}selected{% endif %}>Goat</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-2">
+    <select class="form-select" name="camp">
+      <option value="">All camps</option>
+      {% for camp in camps %}
+      <option value="{{ camp.id }}" {% if camp_filter == camp.id|string %}selected{% endif %}>{{ camp.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-12 col-md-2">
+    <select class="form-select" name="status">
+      <option value="">All status</option>
+      <option value="open" {% if status_filter == 'open' %}selected{% endif %}>Open</option>
+      <option value="done" {% if status_filter == 'done' %}selected{% endif %}>Done</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="sold" {% if status_filter == 'sold' %}selected{% endif %}>Sold</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-2">
+    <button class="btn btn-primary w-100">Apply</button>
+  </div>
+</form>
+<div class="row g-3 mb-4">
+  {% for report in report_tables %}
+  <div class="col-12 col-lg-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h6 class="text-muted mb-1">{{ report.title }}</h6>
+          <h3 class="mb-0">{{ report.total }}</h3>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" disabled>Export PDF (Coming Soon)</button>
+          <button class="btn btn-outline-secondary btn-sm" disabled>Export Excel (Coming Soon)</button>
+        </div>
+      </div>
+      <div class="table-responsive mt-3">
+        <table class="table table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="text-end">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in report.rows %}
+            <tr>
+              <td>{{ row.label }}</td>
+              <td class="text-end"><strong>{{ row.value }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% set title = 'Animal Register' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-3">
+      <h5>{{ 'Edit animal' if item else 'Add animal' }}</h5>
+      <form method="post" enctype="multipart/form-data" action="{{ url_for('animals_edit', animal_id=item.id) if item else url_for('animals_new') }}">
+        <div class="mb-2"><input class="form-control" name="tag_number" placeholder="Tag number" value="{{ item.tag_number if item else '' }}" required></div>
+        <div class="mb-2"><select class="form-select" name="species"><option value="cattle" {% if item and item.species=='cattle' %}selected{% endif %}>Cattle</option><option value="sheep" {% if item and item.species=='sheep' %}selected{% endif %}>Sheep</option><option value="goat" {% if item and item.species=='goat' %}selected{% endif %}>Goat</option></select></div>
+        <div class="mb-2"><input class="form-control" name="breed" placeholder="Breed" value="{{ item.breed if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="sex" placeholder="Sex" value="{{ item.sex if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="dob_or_age" placeholder="DOB or age" value="{{ item.dob_or_age if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="colour_markings" placeholder="Colour / markings" value="{{ item.colour_markings if item else '' }}"></div>
+        <div class="mb-2"><select class="form-select" name="camp_id"><option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if item and item.camp_id == camp.id %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></div>
+        <div class="mb-2"><input class="form-control" name="category" placeholder="Category" value="{{ item.category if item else '' }}"></div>
+        <div class="mb-2"><select class="form-select" name="status"><option value="active" {% if item and item.status=='active' %}selected{% endif %}>Active</option><option value="sold" {% if item and item.status=='sold' %}selected{% endif %}>Sold</option><option value="dead" {% if item and item.status=='dead' %}selected{% endif %}>Dead</option><option value="missing" {% if item and item.status=='missing' %}selected{% endif %}>Missing</option><option value="culled" {% if item and item.status=='culled' %}selected{% endif %}>Culled</option></select></div>
+        <div class="mb-2"><input class="form-control" type="date" name="purchase_date" value="{{ item.purchase_date if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="purchase_source" placeholder="Purchase source" value="{{ item.purchase_source if item else '' }}"></div>
+        <div class="mb-2">
+          <label class="form-label small">Main profile photo</label>
+          <input class="form-control" type="file" name="main_photo" accept="image/jpeg,image/png,image/webp" capture="environment">
+          <div class="form-text">Allowed: jpg, jpeg, png, webp. Max size: 5MB.</div>
+        </div>
+        <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        <button class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Animal list</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          <select class="form-select" name="status">
+            <option value="">All status</option>
+            <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
+            <option value="sold" {% if status_filter=='sold' %}selected{% endif %}>Sold</option>
+            <option value="dead" {% if status_filter=='dead' %}selected{% endif %}>Dead</option>
+            <option value="missing" {% if status_filter=='missing' %}selected{% endif %}>Missing</option>
+            <option value="culled" {% if status_filter=='culled' %}selected{% endif %}>Culled</option>
+          </select>
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Photo</th><th>Tag</th><th>Species</th><th>Breed</th><th>Category</th><th>Status</th><th>Camp</th><th></th></tr></thead>
+          <tbody>
+            {% for animal in animals %}
+            <tr>
+              <td>
+                {% if animal.main_photo_path %}
+                <img src="{{ animal_photo_url(animal, animal.main_photo_path) }}" alt="{{ animal.tag_number }} thumbnail" style="width:42px;height:42px;object-fit:cover;border-radius:8px;">
+                {% else %}
+                <span class="text-secondary"><i data-lucide="image-off"></i></span>
+                {% endif %}
+              </td>
+              <td><a href="{{ url_for('animal_detail', animal_id=animal.id) }}">{{ animal.tag_number }}</a></td>
+              <td>{{ animal.species }}</td>
+              <td>{{ animal.breed or '-' }}</td>
+              <td>{{ animal.category or '-' }}</td>
+              <td>{{ animal.status }}</td>
+              <td>{{ animal.camp.name if animal.camp else '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('animals_edit', animal_id=animal.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('animals_delete', animal_id=animal.id) }}" style="display:inline" onsubmit="return confirm('Mark this animal as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

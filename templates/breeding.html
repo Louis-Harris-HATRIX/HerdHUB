@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% set title = 'Breeding Records' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-3">
+      <h5>{{ 'Edit record' if item else 'Add breeding record' }}</h5>
+      <form method="post" action="{{ url_for('breeding_edit', record_id=item.id) if item else url_for('breeding_new') }}">
+        <div class="mb-2"><select class="form-select" name="species"><option value="cattle" {% if item and item.species=='cattle' %}selected{% endif %}>Cattle</option><option value="sheep" {% if item and item.species=='sheep' %}selected{% endif %}>Sheep</option><option value="goat" {% if item and item.species=='goat' %}selected{% endif %}>Goat</option></select></div>
+        <div class="mb-2"><input class="form-control" name="breeding_season" placeholder="Breeding season" value="{{ item.breeding_season if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="male_used" placeholder="Male used" value="{{ item.male_used if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="female_reference" placeholder="Female animal/group" value="{{ item.female_reference if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" type="date" name="date_exposed" value="{{ item.date_exposed if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="pregnancy_status" placeholder="Pregnancy status" value="{{ item.pregnancy_status if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" type="date" name="expected_birth_date" value="{{ item.expected_birth_date if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" type="date" name="actual_birth_date" value="{{ item.actual_birth_date if item else '' }}"></div>
+        <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        <button class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Breeding records</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Species</th><th>Season</th><th>Female</th><th>Status</th><th>Expected birth</th><th></th></tr></thead>
+          <tbody>
+            {% for record in records %}
+            <tr>
+              <td>{{ record.species }}</td>
+              <td>{{ record.breeding_season or '-' }}</td>
+              <td>{{ record.female_reference or '-' }}</td>
+              <td>{{ record.pregnancy_status or '-' }}</td>
+              <td>{{ record.expected_birth_date or '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('breeding_edit', record_id=record.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('breeding_delete', record_id=record.id) }}" style="display:inline" onsubmit="return confirm('Mark this record as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

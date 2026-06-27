@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% set title = animal.tag_number %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-4">
+      <div class="mb-3">
+        {% if animal.main_photo_path %}
+        <img src="{{ animal_photo_url(animal, animal.main_photo_path) }}" alt="{{ animal.tag_number }} profile photo" class="img-fluid rounded">
+        {% else %}
+        <div class="border rounded p-4 text-center text-secondary"><i data-lucide="image-off"></i> No profile photo</div>
+        {% endif %}
+      </div>
+      <h5>{{ animal.tag_number }}</h5>
+      <p class="text-muted mb-3">{{ animal.species|title }} • {{ animal.breed or 'Unknown breed' }}</p>
+      <ul class="list-unstyled small">
+        <li><strong>Camp:</strong> {{ animal.camp.name if animal.camp else '—' }}</li>
+        <li><strong>Status:</strong> {{ animal.status|title }}</li>
+        <li><strong>Sex:</strong> {{ animal.sex or '—' }}</li>
+        <li><strong>Age:</strong> {{ animal.dob_or_age or '—' }}</li>
+        <li><strong>Notes:</strong> {{ animal.notes or '—' }}</li>
+      </ul>
+    </div>
+    <div class="card p-4 mt-4">
+      <h6 class="mb-3">Upload additional photo</h6>
+      <form method="post" enctype="multipart/form-data" action="{{ url_for('animal_photo_upload', animal_id=animal.id) }}">
+        <div class="mb-2">
+          <input class="form-control" type="file" name="photo" accept="image/jpeg,image/png,image/webp" capture="environment" required>
+        </div>
+        <div class="mb-2">
+          <input class="form-control" name="caption" placeholder="Caption (optional)">
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" name="is_primary" id="is_primary_photo">
+          <label class="form-check-label" for="is_primary_photo">Set as primary photo</label>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Upload photo</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-4 mb-4">
+      <h5>Photo gallery</h5>
+      <div class="row g-3 mt-1">
+        {% for photo in photos %}
+        <div class="col-12 col-md-6">
+          <div class="border rounded p-2 h-100">
+            <img src="{{ animal_photo_url(animal, photo.file_path) }}" alt="Animal photo {{ loop.index }}" class="img-fluid rounded mb-2" style="width:100%;height:180px;object-fit:cover;">
+            <div class="small text-muted mb-2">{{ photo.caption or 'No caption' }}</div>
+            <div class="small text-secondary mb-2">Uploaded {{ photo.uploaded_at.strftime('%Y-%m-%d %H:%M') if photo.uploaded_at else 'unknown' }}{% if photo.uploaded_by %} by {{ photo.uploaded_by.full_name }}{% endif %}</div>
+            <div class="d-flex gap-2">
+              {% if not photo.is_primary %}
+              <form method="post" action="{{ url_for('animal_photo_set_primary', animal_id=animal.id, photo_id=photo.id) }}">
+                <button class="btn btn-sm btn-outline-primary" type="submit">Set as primary</button>
+              </form>
+              {% else %}
+              <span class="badge text-bg-success">Primary</span>
+              {% endif %}
+              <form method="post" action="{{ url_for('animal_photo_delete', animal_id=animal.id, photo_id=photo.id) }}" onsubmit="return confirm('Delete this photo?');">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-muted">No photos uploaded yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card p-4">
+      <h5>Record timeline</h5>
+      <div class="timeline mt-3">
+        {% for date_value, category, title, note in timeline_items %}
+        <div class="border-start ps-3 pb-3">
+          <div class="fw-semibold">{{ date_value or 'Unknown' }} • {{ category }}</div>
+          <div class="text-muted small">{{ title }}</div>
+          {% if note %}<div class="small">{{ note }}</div>{% endif %}
+        </div>
+        {% else %}
+        <div class="text-muted">No timeline entries yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

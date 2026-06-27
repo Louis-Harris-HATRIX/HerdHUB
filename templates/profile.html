@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% set title = 'User Profile' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-4 text-center">
+      <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width:96px;height:96px;font-size:2rem;">{{ user.full_name[0] }}</div>
+      <h4>{{ user.full_name }}</h4>
+      <p class="text-muted mb-3">{{ user.role|title }}</p>
+      <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }} mb-3">{{ 'Active' if user.is_active else 'Inactive' }}</span>
+      {% if current_user and current_user.role == 'admin' and current_user.id != user.id %}
+      <form method="post" action="{{ url_for('reset_password', user_id=user.id) }}" class="mt-2">
+        <div class="input-group input-group-sm">
+          <input class="form-control" name="password" placeholder="New password" />
+          <button class="btn btn-outline-danger">Reset</button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-4">
+      <h5>Profile details</h5>
+      <div class="row g-3 mt-2">
+        <div class="col-12 col-md-6"><strong>Full name</strong><div>{{ user.full_name }}</div></div>
+        <div class="col-12 col-md-6"><strong>Username</strong><div>{{ user.username }}</div></div>
+        <div class="col-12 col-md-6"><strong>Email</strong><div>{{ user.email or '—' }}</div></div>
+        <div class="col-12 col-md-6"><strong>Phone</strong><div>{{ user.phone or '—' }}</div></div>
+        <div class="col-12 col-md-6"><strong>Role</strong><div>{{ user.role|title }}</div></div>
+        <div class="col-12 col-md-6"><strong>Status</strong><div>{{ 'Active' if user.is_active else 'Inactive' }}</div></div>
+        <div class="col-12 col-md-6"><strong>Last login</strong><div>{{ user.last_login or 'Never' }}</div></div>
+        <div class="col-12 col-md-6"><strong>Created</strong><div>{{ user.created_at }}</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

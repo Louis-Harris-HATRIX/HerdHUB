@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% set title = 'Death / Loss Records' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-3">
+      <h5>{{ 'Edit record' if item else 'Add death/loss record' }}</h5>
+      <form method="post" action="{{ url_for('deaths_edit', record_id=item.id) if item else url_for('deaths_new') }}">
+        <div class="mb-2"><input class="form-control" type="date" name="date" value="{{ item.date if item else '' }}" required></div>
+        <div class="mb-2"><input class="form-control" name="subject_name" placeholder="Animal or group" value="{{ item.subject_name if item else '' }}" required></div>
+        <div class="mb-2"><input class="form-control" type="number" name="number_lost" placeholder="Number lost" value="{{ item.number_lost if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="cause" placeholder="Cause" value="{{ item.cause if item else '' }}"></div>
+        <div class="mb-2"><select class="form-select" name="camp_id"><option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if item and item.camp_id == camp.id %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></div>
+        <div class="mb-2"><input class="form-control" name="estimated_value_lost" placeholder="Estimated value lost" value="{{ item.estimated_value_lost if item else '' }}"></div>
+        <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        <button class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Loss records</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Date</th><th>Subject</th><th>Number</th><th>Cause</th><th>Camp</th><th></th></tr></thead>
+          <tbody>
+            {% for record in records %}
+            <tr>
+              <td>{{ record.date }}</td>
+              <td>{{ record.subject_name }}</td>
+              <td>{{ record.number_lost }}</td>
+              <td>{{ record.cause or '-' }}</td>
+              <td>{{ record.camp.name if record.camp else '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('deaths_edit', record_id=record.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('deaths_delete', record_id=record.id) }}" style="display:inline" onsubmit="return confirm('Mark this record as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

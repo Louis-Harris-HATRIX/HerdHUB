@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% set title = 'Tasks and Reminders' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-3">
+      <h5>{{ 'Edit task' if item else 'Add task' }}</h5>
+      <form method="post" action="{{ url_for('tasks_edit', task_id=item.id) if item else url_for('tasks_new') }}">
+        <div class="mb-2"><input class="form-control" name="title" placeholder="Task title" value="{{ item.title if item else '' }}" required></div>
+        <div class="mb-2"><textarea class="form-control" name="description" rows="3" placeholder="Description">{{ item.description if item else '' }}</textarea></div>
+        <div class="mb-2"><input class="form-control" type="date" name="due_date" value="{{ item.due_date if item else '' }}" required></div>
+        <div class="mb-2"><input class="form-control" name="related_name" placeholder="Related animal/group/camp" value="{{ item.related_name if item else '' }}"></div>
+        <div class="mb-2"><select class="form-select" name="priority"><option value="low" {% if item and item.priority=='low' %}selected{% endif %}>Low</option><option value="medium" {% if item and item.priority=='medium' %}selected{% endif %}>Medium</option><option value="high" {% if item and item.priority=='high' %}selected{% endif %}>High</option></select></div>
+        <div class="mb-2"><input class="form-control" name="assigned_to" placeholder="Assigned to" value="{{ item.assigned_to if item else '' }}"></div>
+        <div class="mb-2"><select class="form-select" name="status"><option value="open" {% if item and item.status=='open' %}selected{% endif %}>Open</option><option value="done" {% if item and item.status=='done' %}selected{% endif %}>Done</option><option value="overdue" {% if item and item.status=='overdue' %}selected{% endif %}>Overdue</option></select></div>
+        <div class="mb-2"><input class="form-control" name="recurring" placeholder="Recurring option" value="{{ item.recurring if item else '' }}"></div>
+        <button class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Task list</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          <select class="form-select" name="status">
+            <option value="">All</option>
+            <option value="open" {% if status_filter=='open' %}selected{% endif %}>Open</option>
+            <option value="done" {% if status_filter=='done' %}selected{% endif %}>Done</option>
+            <option value="overdue" {% if status_filter=='overdue' %}selected{% endif %}>Overdue</option>
+          </select>
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Title</th><th>Due</th><th>Priority</th><th>Status</th><th>Assigned</th><th></th></tr></thead>
+          <tbody>
+            {% for task in tasks %}
+            <tr>
+              <td>{{ task.title }}</td>
+              <td>{{ task.due_date }}</td>
+              <td>{{ task.priority }}</td>
+              <td>{{ task.status }}</td>
+              <td>{{ task.assigned_to or '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('tasks_edit', task_id=task.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('tasks_delete', task_id=task.id) }}" style="display:inline" onsubmit="return confirm('Mark this task as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

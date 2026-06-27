@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% set title = 'Health Records' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-3">
+      <h5>{{ 'Edit record' if item else 'Add health record' }}</h5>
+      <form method="post" action="{{ url_for('health_edit', record_id=item.id) if item else url_for('health_new') }}">
+        <div class="mb-2"><input class="form-control" type="date" name="date" value="{{ item.date if item else '' }}" required></div>
+        <div class="mb-2"><input class="form-control" name="subject_name" placeholder="Animal or group" value="{{ item.subject_name if item else '' }}" required></div>
+        <div class="mb-2"><select class="form-select" name="treatment_type"><option value="vaccine" {% if item and item.treatment_type=='vaccine' %}selected{% endif %}>Vaccine</option><option value="dosing" {% if item and item.treatment_type=='dosing' %}selected{% endif %}>Dosing</option><option value="antibiotic" {% if item and item.treatment_type=='antibiotic' %}selected{% endif %}>Antibiotic</option><option value="dip" {% if item and item.treatment_type=='dip' %}selected{% endif %}>Dip</option><option value="hoof care" {% if item and item.treatment_type=='hoof care' %}selected{% endif %}>Hoof care</option><option value="wound" {% if item and item.treatment_type=='wound' %}selected{% endif %}>Wound</option><option value="disease" {% if item and item.treatment_type=='disease' %}selected{% endif %}>Disease</option><option value="other" {% if item and item.treatment_type=='other' %}selected{% endif %}>Other</option></select></div>
+        <div class="mb-2"><input class="form-control" name="product_used" placeholder="Product used" value="{{ item.product_used if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="dosage" placeholder="Dosage" value="{{ item.dosage if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="batch_number" placeholder="Batch number" value="{{ item.batch_number if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="withdrawal_period" placeholder="Withdrawal period" value="{{ item.withdrawal_period if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" type="date" name="next_due_date" value="{{ item.next_due_date if item else '' }}"></div>
+        <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        <button class="btn btn-primary">Save</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Health records</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Date</th><th>Subject</th><th>Treatment</th><th>Product</th><th>Next due</th><th></th></tr></thead>
+          <tbody>
+            {% for record in records %}
+            <tr>
+              <td>{{ record.date }}</td>
+              <td>{{ record.subject_name }}</td>
+              <td>{{ record.treatment_type }}</td>
+              <td>{{ record.product_used or '-' }}</td>
+              <td>{{ record.next_due_date or '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('health_edit', record_id=record.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('health_delete', record_id=record.id) }}" style="display:inline" onsubmit="return confirm('Mark this record as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

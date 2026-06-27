@@ -1,0 +1,9 @@
+**pycache__/
+*.pyc
+.env
+instance/
+*.db
+uploads/*
+!uploads/.gitkeep
+.tmp_branding/
+~$*.docx

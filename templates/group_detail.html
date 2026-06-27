@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% set title = group.name %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 col-lg-4">
+    <div class="card p-4">
+      <h5>{{ group.name }}</h5>
+      <p class="text-muted mb-3">{{ group.species|title }} • {{ group.age_class or 'Mixed' }}</p>
+      <ul class="list-unstyled small">
+        <li><strong>Camp:</strong> {{ group.camp.name if group.camp else '—' }}</li>
+        <li><strong>Animals:</strong> {{ group.number_of_animals }}</li>
+        <li><strong>Purpose:</strong> {{ group.purpose or '—' }}</li>
+        <li><strong>Notes:</strong> {{ group.notes or '—' }}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card p-4">
+      <h5>Record timeline</h5>
+      <div class="timeline mt-3">
+        {% for date_value, category, title, note in timeline_items %}
+        <div class="border-start ps-3 pb-3">
+          <div class="fw-semibold">{{ date_value or 'Unknown' }} • {{ category }}</div>
+          <div class="text-muted small">{{ title }}</div>
+          {% if note %}<div class="small">{{ note }}</div>{% endif %}
+        </div>
+        {% else %}
+        <div class="text-muted">No timeline entries yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
