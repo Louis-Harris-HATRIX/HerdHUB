@@ -2,7 +2,7 @@
 {% set title = 'Health Records' %}
 {% block content %}
 <div class="row g-4">
-  <div class="col-12 col-lg-4">
+  <div class="col-12 order-2">
     <div class="card p-3">
       <h5>{{ 'Edit record' if item else 'Add health record' }}</h5>
       <form method="post" action="{{ url_for('health_edit', record_id=item.id) if item else url_for('health_new') }}">
@@ -19,7 +19,7 @@
       </form>
     </div>
   </div>
-  <div class="col-12 col-lg-8">
+  <div class="col-12 order-1">
     <div class="card p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Health records</h5>

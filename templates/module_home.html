@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card p-3 p-md-4 mb-4">
+  <div class="row g-3 align-items-center">
+    <div class="col-12 col-lg-8">
+      <h2 class="h4 mb-2">{{ module_title }}</h2>
+      <p class="text-secondary mb-0">{{ module_intro }}</p>
+    </div>
+    {% if action_links %}
+    <div class="col-12 col-lg-4">
+      <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+        {% for action in action_links %}
+        <a class="btn btn-{{ action.style or 'outline-secondary' }}" href="{{ action.href }}">{{ action.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% for group in section_groups %}
+<div class="mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+      <h5 class="mb-1">{{ group['title'] }}</h5>
+      {% if group['description'] %}
+      <p class="text-secondary mb-0">{{ group['description'] }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row g-3">
+    {% for item in group['items'] %}
+    <div class="col-12 col-md-6 col-xl-4">
+      {% if item.href and not item.disabled %}
+      <a class="card p-3 h-100 text-decoration-none text-reset bh-module-card" href="{{ item.href }}">
+      {% else %}
+      <div class="card p-3 h-100 bh-module-card bh-module-card-disabled">
+      {% endif %}
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+          <div>
+            <h5 class="mb-1">{{ item.title }}</h5>
+            {% if item.badge %}
+            <span class="badge text-bg-light mb-2">{{ item.badge }}</span>
+            {% endif %}
+          </div>
+          {% if item.icon == 'cattle' %}
+          <svg class="bh-module-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h13a3 3 0 0 1 3 3v1H3z"/><path d="M3 13V10a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v3"/><path d="M16 10h2l2-2"/><path d="M16 10l2 2"/><path d="M6 14v4"/><path d="M11 14v4"/><path d="M16 14v4"/><circle cx="17.5" cy="9.4" r=".6" fill="currentColor" stroke="none"/></svg>
+          {% elif item.icon_src %}
+          <img class="bh-module-card-icon bh-icon-image" src="{{ item.icon_src }}" alt="" aria-hidden="true">
+          {% else %}
+          <i class="bh-module-card-icon" data-lucide="{{ item.icon or 'square-stack' }}"></i>
+          {% endif %}
+        </div>
+        <p class="text-secondary mb-0 small">{{ item.description }}</p>
+      {% if item.href and not item.disabled %}
+      </a>
+      {% else %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

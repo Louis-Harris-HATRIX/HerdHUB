@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% set title = 'Hunting Bookings' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 order-1">
+    <div class="card p-3">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h5 class="mb-0">Booking overview</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search booking or hunter" value="{{ q }}">
+          <select class="form-select" name="status">
+            <option value="">All statuses</option>
+            <option value="enquiry" {% if status_filter == 'enquiry' %}selected{% endif %}>Enquiry</option>
+            <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+            <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+          </select>
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Hunter</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Status</th>
+              <th>Grand</th>
+              <th>Balance</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in bookings %}
+            <tr>
+              <td>{{ booking.booking_reference }}</td>
+              <td>{{ booking.hunter_name }}</td>
+              <td>{{ booking.date_from }}</td>
+              <td>{{ booking.date_to }}</td>
+              <td>{{ booking.status|title }}</td>
+              <td>{{ format_currency(booking.final_grand_total or 0) }}</td>
+              <td>{{ format_currency(booking.final_balance_due or 0) }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('hunting_booking_summary', booking_id=booking.id) }}">Summary</a>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('hunting_bookings_edit', booking_id=booking.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('hunting_bookings_delete', booking_id=booking.id) }}" style="display:inline" onsubmit="return confirm('Archive this booking?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="8" class="text-secondary">No hunting bookings found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 order-2">
+    <div class="card p-3">
+      <h5>{{ 'Edit booking' if item else 'Add booking' }}</h5>
+      <form method="post" action="{{ url_for('hunting_bookings_edit', booking_id=item.id) if item else url_for('hunting_bookings_new') }}">
+        <div class="row g-2">
+          <div class="col-md-4"><input class="form-control" name="booking_reference" placeholder="Booking reference" value="{{ item.booking_reference if item else '' }}"></div>
+          <div class="col-md-8"><input class="form-control" name="hunter_name" placeholder="Hunter full name" value="{{ item.hunter_name if item else '' }}" required></div>
+          <div class="col-md-4"><input class="form-control" type="date" name="date_from" value="{{ item.date_from if item else '' }}" required></div>
+          <div class="col-md-4"><input class="form-control" type="date" name="date_to" value="{{ item.date_to if item else '' }}" required></div>
+          <div class="col-md-4">
+            <select class="form-select" name="status">
+              <option value="enquiry" {% if item and item.status == 'enquiry' %}selected{% endif %}>Enquiry</option>
+              <option value="confirmed" {% if item and item.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+              <option value="completed" {% if item and item.status == 'completed' %}selected{% endif %}>Completed</option>
+              <option value="cancelled" {% if item and item.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </div>
+          <div class="col-md-6"><input class="form-control" name="contact_number" placeholder="Contact number" value="{{ item.contact_number if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" type="email" name="email" placeholder="Email" value="{{ item.email if item else '' }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" min="1" name="number_of_hunting_days" placeholder="Hunting days" value="{{ item.number_of_hunting_days if item else 1 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" min="1" name="number_of_hunters" placeholder="Hunters" value="{{ item.number_of_hunters if item else 1 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" min="0" name="number_of_guests" placeholder="Guests" value="{{ item.number_of_guests if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="day_fee_per_hunter" placeholder="Day fee per hunter (R)" value="{{ item.day_fee_per_hunter if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="staff_fee_per_day" placeholder="Staff fee per day (R)" value="{{ item.staff_fee_per_day if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="guide_fee_per_day" placeholder="Guide fee per day (R)" value="{{ item.guide_fee_per_day if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="tracker_fee_per_day" placeholder="Tracker fee per day (R)" value="{{ item.tracker_fee_per_day if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="skinner_fee_per_day" placeholder="Skinner fee per day (R)" value="{{ item.skinner_fee_per_day if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" name="guide_assigned" placeholder="Guide assigned" value="{{ item.guide_assigned if item else '' }}"></div>
+          <div class="col-12 form-check ms-1">
+            <input class="form-check-input" type="checkbox" id="accommodation_required" name="accommodation_required" {% if item and item.accommodation_required %}checked{% endif %}>
+            <label class="form-check-label" for="accommodation_required">Accommodation required</label>
+          </div>
+          <div class="col-md-4"><input class="form-control" type="number" min="0" name="accommodation_nights" placeholder="Accommodation nights" value="{{ item.accommodation_nights if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" min="0" name="accommodation_people" placeholder="Accommodation people" value="{{ item.accommodation_people if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="accommodation_rate_per_person_per_night" placeholder="Accommodation rate (R)" value="{{ item.accommodation_rate_per_person_per_night if item else 0 }}"></div>
+          <div class="col-md-6"><input class="form-control" type="number" step="0.01" min="0" name="extras_total" placeholder="Extras total (R)" value="{{ item.extras_total if item else 0 }}"></div>
+          <div class="col-md-6"><input class="form-control" type="number" step="0.01" min="0" name="deposit_paid" placeholder="Deposit paid (R)" value="{{ item.deposit_paid if item else 0 }}"></div>
+          <div class="col-12 form-check ms-1">
+            <input class="form-check-input" type="checkbox" id="fee_override_enabled" name="fee_override_enabled" {% if item and item.fee_override_enabled %}checked{% endif %}>
+            <label class="form-check-label" for="fee_override_enabled">Enable manual override</label>
+          </div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="override_hunting_day_fees_total" placeholder="Override day fees (R)" value="{{ item.override_hunting_day_fees_total if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="override_staff_fees_total" placeholder="Override staff fees (R)" value="{{ item.override_staff_fees_total if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="override_accommodation_total" placeholder="Override accommodation (R)" value="{{ item.override_accommodation_total if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="override_animals_shot_total" placeholder="Override animals shot (R)" value="{{ item.override_animals_shot_total if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="override_extras_total" placeholder="Override extras (R)" value="{{ item.override_extras_total if item else 0 }}"></div>
+          <div class="col-md-4"><input class="form-control" type="number" step="0.01" min="0" name="override_grand_total" placeholder="Override grand total (R)" value="{{ item.override_grand_total if item else 0 }}"></div>
+          <div class="col-12"><textarea class="form-control" rows="2" name="override_notes" placeholder="Override reason">{{ item.override_notes if item else '' }}</textarea></div>
+          {% if item %}
+          <div class="col-12">
+            <div class="alert alert-light border mb-0">
+              Calculated grand total: <strong>{{ format_currency(item.grand_total or 0) }}</strong> |
+              Final grand total: <strong>{{ format_currency(item.final_grand_total or 0) }}</strong> |
+              Balance due: <strong>{{ format_currency(item.final_balance_due or 0) }}</strong>
+            </div>
+          </div>
+          {% endif %}
+          <div class="col-12"><textarea class="form-control" rows="3" name="notes" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        </div>
+        <button class="btn btn-primary mt-3">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

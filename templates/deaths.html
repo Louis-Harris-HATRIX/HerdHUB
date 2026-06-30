@@ -2,7 +2,7 @@
 {% set title = 'Death / Loss Records' %}
 {% block content %}
 <div class="row g-4">
-  <div class="col-12 col-lg-4">
+  <div class="col-12 order-2">
     <div class="card p-3">
       <h5>{{ 'Edit record' if item else 'Add death/loss record' }}</h5>
       <form method="post" action="{{ url_for('deaths_edit', record_id=item.id) if item else url_for('deaths_new') }}">
@@ -11,13 +11,13 @@
         <div class="mb-2"><input class="form-control" type="number" name="number_lost" placeholder="Number lost" value="{{ item.number_lost if item else '' }}"></div>
         <div class="mb-2"><input class="form-control" name="cause" placeholder="Cause" value="{{ item.cause if item else '' }}"></div>
         <div class="mb-2"><select class="form-select" name="camp_id"><option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if item and item.camp_id == camp.id %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select></div>
-        <div class="mb-2"><input class="form-control" name="estimated_value_lost" placeholder="Estimated value lost" value="{{ item.estimated_value_lost if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="estimated_value_lost" placeholder="Estimated value lost (R)" value="{{ item.estimated_value_lost if item else '' }}"></div>
         <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
         <button class="btn btn-primary">Save</button>
       </form>
     </div>
   </div>
-  <div class="col-12 col-lg-8">
+  <div class="col-12 order-1">
     <div class="card p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Loss records</h5>

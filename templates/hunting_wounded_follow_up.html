@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% set title = 'Wounded Follow-up' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 order-1">
+    <div class="card p-3">
+      <h5>Wounded follow-up overview</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Booking</th><th>Species</th><th>Date</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {% for row in items %}
+            <tr>
+              <td>{{ row.booking.booking_reference if row.booking else '-' }}</td>
+              <td>{{ row.species }}</td>
+              <td>{{ row.date_wounded or '-' }}</td>
+              <td>{{ row.follow_up_status|replace('_', ' ')|title }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('hunting_wounded_edit', item_id=row.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('hunting_wounded_delete', item_id=row.id) }}" style="display:inline" onsubmit="return confirm('Archive this follow-up?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-secondary">No wounded follow-up records found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 order-2">
+    <div class="card p-3">
+      <h5>{{ 'Edit wounded follow-up' if item else 'Add wounded follow-up' }}</h5>
+      <form method="post" action="{{ url_for('hunting_wounded_edit', item_id=item.id) if item else url_for('hunting_wounded_new') }}">
+        <div class="row g-2">
+          <div class="col-md-6">
+            <select class="form-select" name="booking_id" required>
+              <option value="">Select booking</option>
+              {% for booking in bookings %}<option value="{{ booking.id }}" {% if item and item.booking_id == booking.id %}selected{% endif %}>{{ booking.booking_reference }} - {{ booking.hunter_name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <select class="form-select" name="hunting_log_id" required>
+              <option value="">Select log record</option>
+              {% for log in logs %}<option value="{{ log.id }}" {% if item and item.hunting_log_id == log.id %}selected{% endif %}>{{ log.date }} - {{ log.species }} ({{ log.outcome }})</option>{% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4"><input class="form-control" name="species" placeholder="Species" value="{{ item.species if item else '' }}" required></div>
+          <div class="col-md-4"><input class="form-control" type="date" name="date_wounded" value="{{ item.date_wounded if item else '' }}"></div>
+          <div class="col-md-4">
+            <select class="form-select" name="follow_up_status">
+              <option value="open" {% if not item or item.follow_up_status == 'open' %}selected{% endif %}>Open</option>
+              <option value="recovered" {% if item and item.follow_up_status == 'recovered' %}selected{% endif %}>Recovered</option>
+              <option value="not_recovered" {% if item and item.follow_up_status == 'not_recovered' %}selected{% endif %}>Not recovered</option>
+              <option value="written_off" {% if item and item.follow_up_status == 'written_off' %}selected{% endif %}>Written off</option>
+            </select>
+          </div>
+          <div class="col-12"><textarea class="form-control" rows="3" name="notes" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        </div>
+        <button class="btn btn-primary mt-3">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card p-3 p-md-4 mb-4">
+  <h2 class="h4 mb-2">{{ report_title }}</h2>
+  <p class="text-secondary mb-0">{{ report_intro }}</p>
+</div>
+
+{% if filters and filters.fields %}
+<form class="row g-2 mb-4" method="get" action="{{ filters.action }}">
+  {% for field in filters.fields %}
+  <div class="col-12 col-md-6 col-lg-2">
+    {% if field.type == 'select' %}
+    <select class="form-select" name="{{ field.name }}" aria-label="{{ field.label }}">
+      {% for option in field.options %}
+      <option value="{{ option.value }}" {% if field.value == option.value %}selected{% endif %}>{{ option.label }}</option>
+      {% endfor %}
+    </select>
+    {% else %}
+    <input class="form-control" type="{{ field.type or 'text' }}" name="{{ field.name }}" value="{{ field.value or '' }}" placeholder="{{ field.label }}" aria-label="{{ field.label }}">
+    {% endif %}
+  </div>
+  {% endfor %}
+  <div class="col-12 col-md-6 col-lg-2 d-grid">
+    <button class="btn btn-primary">Apply</button>
+  </div>
+</form>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  {% for report in report_tables %}
+  <div class="col-12 col-lg-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h6 class="text-muted mb-1">{{ report.title }}</h6>
+          <h3 class="mb-0">{{ report.total }}</h3>
+        </div>
+      </div>
+      <div class="table-responsive mt-3">
+        <table class="table table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="text-end">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in report.rows %}
+            <tr>
+              <td>{{ row.label }}</td>
+              <td class="text-end"><strong>{{ row.value }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

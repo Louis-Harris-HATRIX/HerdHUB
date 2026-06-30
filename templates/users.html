@@ -2,7 +2,7 @@
 {% set title = 'User Management' %}
 {% block content %}
 <div class="row g-4">
-  <div class="col-12 col-lg-4">
+  <div class="col-12 order-2">
     <div class="card p-3">
       <h5>{{ 'Edit user' if item else 'Add user' }}</h5>
       <form method="post" action="{{ url_for('users_edit', user_id=item.id) if item else url_for('users_new') }}">
@@ -15,7 +15,7 @@
       </form>
     </div>
   </div>
-  <div class="col-12 col-lg-8">
+  <div class="col-12 order-1">
     <div class="card p-3">
       <h5 class="mb-3">Users</h5>
       <div class="table-responsive">

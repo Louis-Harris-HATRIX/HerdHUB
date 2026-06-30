@@ -18,6 +18,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  const toggleButtons = document.querySelectorAll('[data-password-toggle]');
+  toggleButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      const inputId = button.getAttribute('data-target');
+      const input = inputId ? document.getElementById(inputId) : null;
+      if (!input) {
+        return;
+      }
+
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      button.setAttribute('aria-pressed', String(isHidden));
+      button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+
+      const icon = button.querySelector('i[data-lucide]');
+      if (icon) {
+        icon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
+  });
+
   if (window.lucide) {
     window.lucide.createIcons();
   }

@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BoerHUB Icon Picker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7f6;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #184a2c;
+      --accent: #b8862d;
+      --border: #e5e7eb;
+      --ok: #0f766e;
+      --danger: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .top {
+      display: grid;
+      gap: 12px;
+      margin: 20px 0 24px;
+      grid-template-columns: 1fr;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text);
+      padding: 8px 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 6%, white);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .input,
+    .select {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px 12px;
+      font: inherit;
+      width: 100%;
+      outline: none;
+    }
+
+    .input:focus,
+    .select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(24, 74, 44, 0.12);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      background: #fff;
+    }
+
+    .name {
+      font-size: 13px;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      padding: 6px 8px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .hint {
+      margin: 10px 0 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .preview-wrap {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1fr;
+    }
+
+    .preview-controls {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .preview-shell {
+      background: var(--primary);
+      border-radius: 16px;
+      padding: 14px;
+      max-width: 360px;
+    }
+
+    .preview-nav-link {
+      color: rgba(255, 255, 255, 0.92);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      margin-bottom: 6px;
+      border: 1px solid transparent;
+    }
+
+    .preview-nav-link.active {
+      background: rgba(184, 134, 45, 0.24);
+      border-color: rgba(184, 134, 45, 0.45);
+    }
+
+    .preview-nav-link .lucide,
+    .preview-card-icon .lucide {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
+      display: block;
+    }
+
+    .preview-cards {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+
+    .preview-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .preview-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .preview-card-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .preview-card-copy {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 8px;
+      min-height: 20px;
+      font-size: 13px;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--danger); }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .inline-code {
+      font-family: Consolas, Menlo, Monaco, monospace;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2px 6px;
+      color: #111827;
+    }
+
+    @media (min-width: 760px) {
+      .controls {
+        grid-template-columns: 1fr 220px;
+      }
+
+      .preview-controls {
+        grid-template-columns: 220px 220px;
+      }
+
+      .preview-wrap {
+        grid-template-columns: 380px 1fr;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>BoerHUB Icon Picker</h1>
+    <p>Search icons, preview them, and click Copy Name to use in app.py as the value for icon.</p>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="browser" type="button">Icon Browser</button>
+      <button class="tab" data-tab="preview" type="button">In-Context Preview</button>
+    </div>
+
+    <div class="top tab-panel active" id="panel-browser">
+      <div class="controls">
+        <input id="search" class="input" placeholder="Search icons (example: tractor, cow, report, health)">
+        <select id="category" class="select">
+          <option value="all">All Categories</option>
+          <option value="nav">Sidebar / Nav</option>
+          <option value="livestock">Livestock Module</option>
+          <option value="wildlife">Wildlife Module</option>
+          <option value="ops">Farm Operations</option>
+          <option value="admin">Admin / General</option>
+        </select>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="hint">
+      Example usage in <span class="inline-code">app.py</span>: <span class="inline-code">{"icon": "tractor"}</span>
+    </div>
+
+    <div id="grid" class="grid tab-panel active"></div>
+
+    <div id="panel-preview" class="tab-panel">
+      <div class="preview-wrap">
+        <aside class="preview-shell">
+          <a class="preview-nav-link" href="#" onclick="return false;"><i data-lucide="house"></i>Home</a>
+          <a class="preview-nav-link active" href="#" onclick="return false;"><i id="preview-livestock-nav" data-lucide="beef"></i>Livestock</a>
+          <a class="preview-nav-link" href="#" onclick="return false;"><i data-lucide="trees"></i>Wildlife</a>
+          <a class="preview-nav-link" href="#" onclick="return false;"><i data-lucide="tractor"></i>Farm Operations</a>
+          <a class="preview-nav-link" href="#" onclick="return false;"><i data-lucide="bar-chart-3"></i>Reports</a>
+        </aside>
+
+        <section>
+          <div class="preview-controls">
+            <select id="preview-target" class="select">
+              <option value="livestockNav">Target: Livestock Sidebar Icon</option>
+              <option value="animalsCard">Target: Animals Module Card Icon</option>
+            </select>
+            <input id="preview-icon-name" class="input" readonly value="beef">
+          </div>
+
+          <p class="hint" style="margin-top:10px;">Click any icon card below to apply it to the selected target. Use this to choose icon names before editing the app.</p>
+
+          <div class="preview-cards">
+            <article class="preview-card">
+              <div class="preview-card-head">
+                <h3 class="preview-card-title">Animals</h3>
+                <span class="preview-card-icon"><i id="preview-animals-card" data-lucide="beef"></i></span>
+              </div>
+              <p class="preview-card-copy">Tag-level livestock records and photos.</p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Custom Cattle Icon Key</h2>
+      <p>If you want the custom inline cattle silhouette, use <span class="inline-code">{"icon": "cattle"}</span> (already supported in module cards).</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    const icons = [
+      { name: 'house', category: 'nav' },
+      { name: 'beef', category: 'nav' },
+      { name: 'paw-print', category: 'nav' },
+      { name: 'trees', category: 'nav' },
+      { name: 'tractor', category: 'nav' },
+      { name: 'bar-chart-3', category: 'nav' },
+      { name: 'user-cog', category: 'nav' },
+
+      { name: 'beef', category: 'livestock' },
+      { name: 'users', category: 'livestock' },
+      { name: 'route', category: 'livestock' },
+      { name: 'stethoscope', category: 'livestock' },
+      { name: 'sprout', category: 'livestock' },
+      { name: 'baby', category: 'livestock' },
+      { name: 'shield-alert', category: 'livestock' },
+      { name: 'banknote', category: 'livestock' },
+      { name: 'shopping-cart', category: 'livestock' },
+
+      { name: 'calendar-check', category: 'wildlife' },
+      { name: 'crosshair', category: 'wildlife' },
+      { name: 'file-check-2', category: 'wildlife' },
+      { name: 'clipboard-list', category: 'wildlife' },
+      { name: 'heart-pulse', category: 'wildlife' },
+      { name: 'leaf', category: 'wildlife' },
+      { name: 'binoculars', category: 'wildlife' },
+      { name: 'target', category: 'wildlife' },
+
+      { name: 'map-pinned', category: 'ops' },
+      { name: 'check-square', category: 'ops' },
+      { name: 'book-open-text', category: 'ops' },
+      { name: 'notebook-tabs', category: 'ops' },
+      { name: 'wrench', category: 'ops' },
+
+      { name: 'list-checks', category: 'admin' },
+      { name: 'settings', category: 'admin' },
+      { name: 'wallet', category: 'admin' },
+      { name: 'hand-coins', category: 'admin' },
+      { name: 'line-chart', category: 'admin' },
+      { name: 'clipboard-pen', category: 'admin' },
+      { name: 'book-marked', category: 'admin' }
+    ];
+
+    const unique = [...new Map(icons.map(i => [i.name + ':' + i.category, i])).values()];
+
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search');
+    const category = document.getElementById('category');
+    const status = document.getElementById('status');
+    const tabs = document.querySelectorAll('.tab');
+    const panelBrowser = document.getElementById('panel-browser');
+    const panelPreview = document.getElementById('panel-preview');
+    const previewTarget = document.getElementById('preview-target');
+    const previewIconName = document.getElementById('preview-icon-name');
+    const previewLivestockNav = document.getElementById('preview-livestock-nav');
+    const previewAnimalsCard = document.getElementById('preview-animals-card');
+
+    function setStatus(message, ok = true) {
+      status.className = 'status ' + (ok ? 'ok' : 'err');
+      status.textContent = message || '';
+      if (message) {
+        setTimeout(() => {
+          status.textContent = '';
+          status.className = 'status';
+        }, 1500);
+      }
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus('Copied: ' + text, true);
+      } catch (e) {
+        setStatus('Could not copy automatically. Icon: ' + text, false);
+      }
+    }
+
+    function switchTab(tabName) {
+      tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.tab === tabName));
+      panelBrowser.classList.toggle('active', tabName === 'browser');
+      grid.classList.toggle('active', tabName === 'browser');
+      panelPreview.classList.toggle('active', tabName === 'preview');
+      lucide.createIcons();
+    }
+
+    function applyPreviewIcon(iconName) {
+      const target = previewTarget.value;
+      if (target === 'livestockNav') {
+        previewLivestockNav.setAttribute('data-lucide', iconName);
+      } else if (target === 'animalsCard') {
+        previewAnimalsCard.setAttribute('data-lucide', iconName);
+      }
+      previewIconName.value = iconName;
+      lucide.createIcons();
+      setStatus('Preview updated: ' + iconName, true);
+    }
+
+    function render() {
+      const q = (search.value || '').trim().toLowerCase();
+      const cat = category.value;
+      grid.innerHTML = '';
+
+      const filtered = unique.filter(item => {
+        const qOk = !q || item.name.includes(q);
+        const cOk = cat === 'all' || item.category === cat;
+        return qOk && cOk;
+      });
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="icon-box"><i data-lucide="${item.name}"></i></div>
+          <div>
+            <div class="name">${item.name}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn" type="button" data-action="copy">Copy Name</button>
+              <button class="btn" type="button" data-action="preview">Use In Preview</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('[data-action="copy"]').addEventListener('click', () => copyText(item.name));
+        card.querySelector('[data-action="preview"]').addEventListener('click', () => applyPreviewIcon(item.name));
+        grid.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    previewTarget.addEventListener('change', () => {
+      previewIconName.value = previewTarget.value === 'livestockNav'
+        ? previewLivestockNav.getAttribute('data-lucide')
+        : previewAnimalsCard.getAttribute('data-lucide');
+    });
+
+    search.addEventListener('input', render);
+    category.addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% set title = 'Hunting Payments' %}
+{% block content %}
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Payments and balances</h5>
+    <form class="d-flex gap-2" method="get">
+      <select class="form-select" name="status">
+        <option value="">All statuses</option>
+        <option value="unpaid" {% if status_filter == 'unpaid' %}selected{% endif %}>Unpaid</option>
+        <option value="partial" {% if status_filter == 'partial' %}selected{% endif %}>Partial</option>
+        <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+      </select>
+      <button class="btn btn-outline-secondary">Filter</button>
+    </form>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead><tr><th>Booking</th><th>Hunter</th><th>Grand total</th><th>Deposit</th><th>Balance</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.booking_reference }}</td>
+          <td>{{ booking.hunter_name }}</td>
+          <td>{{ format_currency(booking.final_grand_total or 0) }}</td>
+          <td>{{ format_currency(booking.deposit_paid or 0) }}</td>
+          <td>{{ format_currency(booking.final_balance_due or 0) }}</td>
+          <td>{{ booking.payment_status|title }}</td>
+          <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('hunting_booking_summary', booking_id=booking.id) }}">Summary</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-secondary">No payment records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

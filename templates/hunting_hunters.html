@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% set title = 'Hunting Hunters' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 order-1">
+    <div class="card p-3">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h5 class="mb-0">Hunter overview</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search hunter" value="{{ q }}">
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID / Passport</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for hunter in hunters %}
+            <tr>
+              <td>{{ hunter.full_name }}</td>
+              <td>{{ hunter.id_or_passport_number or '-' }}</td>
+              <td>{{ hunter.phone or '-' }}</td>
+              <td>{{ hunter.email or '-' }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('hunting_hunters_edit', hunter_id=hunter.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('hunting_hunters_delete', hunter_id=hunter.id) }}" style="display:inline" onsubmit="return confirm('Archive this hunter profile?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-secondary">No hunter profiles found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 order-2">
+    <div class="card p-3">
+      <h5>{{ 'Edit hunter' if item else 'Add hunter' }}</h5>
+      <form method="post" action="{{ url_for('hunting_hunters_edit', hunter_id=item.id) if item else url_for('hunting_hunters_new') }}">
+        <div class="row g-2">
+          <div class="col-md-6"><input class="form-control" name="full_name" placeholder="Full name" value="{{ item.full_name if item else '' }}" required></div>
+          <div class="col-md-6"><input class="form-control" name="id_or_passport_number" placeholder="ID or passport number" value="{{ item.id_or_passport_number if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" name="phone" placeholder="Phone" value="{{ item.phone if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" type="email" name="email" placeholder="Email" value="{{ item.email if item else '' }}"></div>
+          <div class="col-12"><input class="form-control" name="address" placeholder="Address" value="{{ item.address if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" name="licence_details" placeholder="Licence details" value="{{ item.licence_details if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" name="firearm_details" placeholder="Firearm details" value="{{ item.firearm_details if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" name="emergency_contact_name" placeholder="Emergency contact name" value="{{ item.emergency_contact_name if item else '' }}"></div>
+          <div class="col-md-6"><input class="form-control" name="emergency_contact_number" placeholder="Emergency contact number" value="{{ item.emergency_contact_number if item else '' }}"></div>
+          <div class="col-12"><textarea class="form-control" rows="3" name="notes" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
+        </div>
+        <button class="btn btn-primary mt-3">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

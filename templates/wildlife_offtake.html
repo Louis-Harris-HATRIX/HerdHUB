@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% set title = 'Wildlife Trophy / Offtake' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12 order-1">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Offtake records</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search camp or species" value="{{ q }}">
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Date</th><th>Camp</th><th>Species</th><th>Type</th><th>Value</th><th></th></tr></thead>
+          <tbody>
+            {% for row in items %}
+            <tr>
+              <td>{{ row.date }}</td>
+              <td>{{ row.camp.name if row.camp else '-' }}</td>
+              <td>{{ row.species.common_name if row.species else '-' }}</td>
+              <td>{{ row.offtake_type|replace('_', ' ')|title }}</td>
+              <td>{{ format_currency(row.price_value or 0) }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('wildlife_offtake_edit', item_id=row.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('wildlife_offtake_delete', item_id=row.id) }}" style="display:inline" onsubmit="return confirm('Archive this offtake record?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-secondary">No wildlife offtake records found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 order-2">
+    <div class="card p-3">
+      <h5>{{ 'Edit offtake record' if item else 'Add offtake record' }}</h5>
+      <p class="text-secondary small mb-3">Date, camp, and species are required. Trophy records should include a value greater than R0.00.</p>
+      {% set form_values = form_values or {} %}
+      {% set form_errors = form_errors or {} %}
+      {% if form_errors %}
+      <div class="alert alert-warning py-2">Please fix the highlighted fields and try again.</div>
+      {% endif %}
+      <form method="post" action="{{ url_for('wildlife_offtake_edit', item_id=item.id) if item else url_for('wildlife_offtake_new') }}">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label" for="offtake-date">Date</label>
+            <input class="form-control {{ 'is-invalid' if form_errors.get('date') else '' }}" id="offtake-date" type="date" name="date" value="{{ form_values.get('date', item.date if item else '') }}" required>
+            {% if form_errors.get('date') %}<div class="invalid-feedback">{{ form_errors.get('date') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="offtake-camp">Camp</label>
+            <select class="form-select {{ 'is-invalid' if form_errors.get('camp_id') else '' }}" id="offtake-camp" name="camp_id" required>
+              <option value="">Select camp</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if form_values.get('camp_id', item.camp_id if item else '') == camp.id|string %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}
+            </select>
+            {% if form_errors.get('camp_id') %}<div class="invalid-feedback">{{ form_errors.get('camp_id') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="offtake-species">Species</label>
+            <select class="form-select {{ 'is-invalid' if form_errors.get('species_id') else '' }}" id="offtake-species" name="species_id" required>
+              <option value="">Select species</option>{% for species in species_items %}<option value="{{ species.id }}" {% if form_values.get('species_id', item.species_id if item else '') == species.id|string %}selected{% endif %}>{{ species.common_name }}</option>{% endfor %}
+            </select>
+            {% if form_errors.get('species_id') %}<div class="invalid-feedback">{{ form_errors.get('species_id') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="offtake-type">Offtake type</label>
+            <select class="form-select {{ 'is-invalid' if form_errors.get('offtake_type') else '' }}" id="offtake-type" name="offtake_type" aria-describedby="offtake-type-help"><option value="trophy" {% if form_values.get('offtake_type', item.offtake_type if item else 'trophy') == 'trophy' %}selected{% endif %}>Trophy</option><option value="cull" {% if form_values.get('offtake_type', item.offtake_type if item else 'trophy') == 'cull' %}selected{% endif %}>Cull</option><option value="meat" {% if form_values.get('offtake_type', item.offtake_type if item else 'trophy') == 'meat' %}selected{% endif %}>Meat</option></select>
+            <div id="offtake-type-help" class="form-text">Trophy records should carry a sale value. Cull and meat records can be zero-valued.</div>
+            {% if form_errors.get('offtake_type') %}<div class="invalid-feedback d-block">{{ form_errors.get('offtake_type') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="offtake-booking">Booking</label>
+            <select class="form-select" id="offtake-booking" name="booking_id"><option value="">Booking (optional)</option>{% for booking in bookings %}<option value="{{ booking.id }}" {% if form_values.get('booking_id', item.booking_id if item else '') == booking.id|string %}selected{% endif %}>{{ booking.booking_reference }}</option>{% endfor %}</select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="offtake-hunter">Hunter</label>
+            <select class="form-select" id="offtake-hunter" name="hunter_id"><option value="">Hunter (optional)</option>{% for hunter in hunters %}<option value="{{ hunter.id }}" {% if form_values.get('hunter_id', item.hunter_id if item else '') == hunter.id|string %}selected{% endif %}>{{ hunter.full_name }}</option>{% endfor %}</select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" for="offtake-sex">Sex</label>
+            <select class="form-select {{ 'is-invalid' if form_errors.get('sex') else '' }}" id="offtake-sex" name="sex"><option value="male" {% if form_values.get('sex', item.sex if item else 'unknown') == 'male' %}selected{% endif %}>Male</option><option value="female" {% if form_values.get('sex', item.sex if item else 'unknown') == 'female' %}selected{% endif %}>Female</option><option value="unknown" {% if form_values.get('sex', item.sex if item else 'unknown') == 'unknown' %}selected{% endif %}>Unknown</option></select>
+            {% if form_errors.get('sex') %}<div class="invalid-feedback">{{ form_errors.get('sex') }}</div>{% endif %}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" for="offtake-age-class">Age class</label>
+            <input class="form-control" id="offtake-age-class" name="age_class" placeholder="Adult, young, etc." value="{{ form_values.get('age_class', item.age_class if item else '') }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" for="offtake-score">Trophy score</label>
+            <input class="form-control" id="offtake-score" name="trophy_score" placeholder="Optional score" value="{{ form_values.get('trophy_score', item.trophy_score if item else '') }}">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label" for="offtake-value">Value (R)</label>
+            <input class="form-control {{ 'is-invalid' if form_errors.get('price_value') else '' }}" id="offtake-value" type="number" step="0.01" min="0" name="price_value" placeholder="0.00" value="{{ form_values.get('price_value', item.price_value if item else 0) }}" aria-describedby="offtake-value-help">
+            <div id="offtake-value-help" class="form-text">Set trophy value above R0.00.</div>
+            {% if form_errors.get('price_value') %}<div class="invalid-feedback d-block">{{ form_errors.get('price_value') }}</div>{% endif %}
+          </div>
+          <div class="col-12 form-check ms-1 mt-2"><input class="form-check-input" type="checkbox" id="recovered" name="recovered" {% if form_submitted %}{% if form_values.get('recovered') %}checked{% endif %}{% else %}{% if not item or item.recovered %}checked{% endif %}{% endif %}><label class="form-check-label" for="recovered">Recovered</label></div>
+          <div class="col-12">
+            <label class="form-label" for="offtake-notes">Notes</label>
+            <textarea class="form-control" id="offtake-notes" rows="3" name="notes" placeholder="Recovery details, shot placement, transport notes, or permit references">{{ form_values.get('notes', item.notes if item else '') }}</textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-3">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var typeField = document.getElementById('offtake-type');
+    var valueField = document.getElementById('offtake-value');
+    var valueHelp = document.getElementById('offtake-value-help');
+    if (!typeField || !valueField || !valueHelp) return;
+
+    function syncOfftakeHint() {
+      if (typeField.value === 'trophy') {
+        valueField.min = '0.01';
+        valueHelp.textContent = 'Trophy records require a value greater than R0.00.';
+      } else {
+        valueField.min = '0';
+        valueHelp.textContent = 'Cull and meat records can be saved with R0.00 when no direct value applies.';
+      }
+    }
+
+    typeField.addEventListener('change', syncOfftakeHint);
+    syncOfftakeHint();
+  })();
+</script>
+{% endblock %}

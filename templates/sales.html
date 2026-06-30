@@ -1,31 +1,35 @@
 {% extends 'base.html' %}
-{% set title = 'Sales and Purchases' %}
+{% set page_label = 'Purchases' if transaction_type_filter == 'purchase' else 'Sales' if transaction_type_filter == 'sale' else 'Sales and Purchases' %}
+{% set title = page_label %}
 {% block content %}
 <div class="row g-4">
-  <div class="col-12 col-lg-4">
+  <div class="col-12 order-2">
     <div class="card p-3">
-      <h5>{{ 'Edit transaction' if item else 'Add transaction' }}</h5>
-      <form method="post" action="{{ url_for('sales_edit', record_id=item.id) if item else url_for('sales_new') }}">
+      <h5>{{ 'Edit transaction' if item else 'Add ' ~ page_label[:-1]|lower if page_label in ['Sales', 'Purchases'] else 'Add transaction' }}</h5>
+      <form method="post" action="{{ url_for('sales_edit', record_id=item.id, transaction_type_filter=transaction_type_filter) if item else url_for('sales_new', transaction_type_filter=transaction_type_filter) }}">
         <div class="mb-2"><input class="form-control" type="date" name="date" value="{{ item.date if item else '' }}" required></div>
         <div class="mb-2"><input class="form-control" name="party" placeholder="Buyer or seller" value="{{ item.party if item else '' }}" required></div>
-        <div class="mb-2"><select class="form-select" name="transaction_type"><option value="sale" {% if item and item.transaction_type=='sale' %}selected{% endif %}>Sale</option><option value="purchase" {% if item and item.transaction_type=='purchase' %}selected{% endif %}>Purchase</option></select></div>
+        <div class="mb-2"><select class="form-select" name="transaction_type"><option value="sale" {% if (item and item.transaction_type=='sale') or (not item and transaction_type_filter == 'sale') %}selected{% endif %}>Sale</option><option value="purchase" {% if (item and item.transaction_type=='purchase') or (not item and transaction_type_filter == 'purchase') %}selected{% endif %}>Purchase</option></select></div>
         <div class="mb-2"><select class="form-select" name="species"><option value="cattle" {% if item and item.species=='cattle' %}selected{% endif %}>Cattle</option><option value="sheep" {% if item and item.species=='sheep' %}selected{% endif %}>Sheep</option><option value="goat" {% if item and item.species=='goat' %}selected{% endif %}>Goat</option></select></div>
         <div class="mb-2"><input class="form-control" name="item_name" placeholder="Animal or group" value="{{ item.item_name if item else '' }}" required></div>
         <div class="mb-2"><input class="form-control" type="number" name="number" placeholder="Number" value="{{ item.number if item else '' }}"></div>
         <div class="mb-2"><input class="form-control" name="weight" placeholder="Weight" value="{{ item.weight if item else '' }}"></div>
-        <div class="mb-2"><input class="form-control" name="price_per_unit" placeholder="Price per head/kg" value="{{ item.price_per_unit if item else '' }}"></div>
-        <div class="mb-2"><input class="form-control" name="total_amount" placeholder="Total amount" value="{{ item.total_amount if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="price_per_unit" placeholder="Price per head/kg (R)" value="{{ item.price_per_unit if item else '' }}"></div>
+        <div class="mb-2"><input class="form-control" name="total_amount" placeholder="Total amount (R)" value="{{ item.total_amount if item else '' }}"></div>
         <div class="mb-2"><textarea class="form-control" name="notes" rows="3" placeholder="Notes">{{ item.notes if item else '' }}</textarea></div>
         <button class="btn btn-primary">Save</button>
       </form>
     </div>
   </div>
-  <div class="col-12 col-lg-8">
+  <div class="col-12 order-1">
     <div class="card p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Transaction log</h5>
+        <h5 class="mb-0">{{ page_label }} Log</h5>
         <form class="d-flex gap-2" method="get">
           <input class="form-control" name="q" placeholder="Search" value="{{ q }}">
+          {% if transaction_type_filter %}
+          <input type="hidden" name="transaction_type_filter" value="{{ transaction_type_filter }}">
+          {% endif %}
           <button class="btn btn-outline-secondary">Filter</button>
         </form>
       </div>
@@ -39,7 +43,7 @@
               <td>{{ record.party }}</td>
               <td>{{ record.transaction_type }}</td>
               <td>{{ record.item_name }}</td>
-              <td>{{ record.total_amount or '-' }}</td>
+              <td>{{ format_currency(record.total_amount or 0) if record.total_amount else '-' }}</td>
               <td>
                 <a class="btn btn-sm btn-outline-primary" href="{{ url_for('sales_edit', record_id=record.id) }}">Edit</a>
                 <form method="post" action="{{ url_for('sales_delete', record_id=record.id) }}" style="display:inline" onsubmit="return confirm('Mark this transaction as deleted?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>

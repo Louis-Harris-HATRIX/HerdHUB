@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% set title = 'Hunting Reports' %}
+{% block content %}
+<div class="row g-3">
+  {% for table in report_tables %}
+  <div class="col-lg-4 col-md-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">{{ table.title }}</h5>
+        <span class="badge text-bg-light">{{ table.total }}</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <tbody>
+            {% for row in table.rows %}
+            <tr><td>{{ row.label }}</td><td class="text-end">{{ row.value }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

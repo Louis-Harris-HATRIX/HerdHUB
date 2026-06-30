@@ -2,7 +2,7 @@
 {% set title = 'Camp / Paddock Management' %}
 {% block content %}
 <div class="row g-4">
-  <div class="col-12 col-lg-4">
+  <div class="col-12 order-2">
     <div class="card p-3">
       <h5>{{ 'Edit camp' if item else 'Add camp' }}</h5>
       <form method="post" action="{{ url_for('camps_edit', camp_id=item.id) if item else url_for('camps_new') }}">
@@ -17,7 +17,7 @@
       </form>
     </div>
   </div>
-  <div class="col-12 col-lg-8">
+  <div class="col-12 order-1">
     <div class="card p-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="mb-0">Camp list</h5>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% set title = 'Hunting' %}
+{% block content %}
+<div class="card p-3 p-md-4 mb-4">
+  <div class="row g-3 align-items-center">
+    <div class="col-12 col-lg-8">
+      <h2 class="h4 mb-2">Hunting Management</h2>
+      <p class="text-secondary mb-0">Open the part of the hunting workflow you need from here. The sidebar stays simple and the module stays integrated with the rest of BoerHUB.</p>
+    </div>
+    <div class="col-12 col-lg-4">
+      <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+        <a class="btn btn-primary" href="{{ url_for('hunting_bookings_new') }}">New Booking</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('hunting_reports') }}">Reports</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  {% for card in summary_cards %}
+  <div class="col-12 col-sm-6 col-xl-3">
+    <div class="card bh-kpi-card bh-hunting-kpi p-3 h-100">
+      <h6 class="text-muted mb-2">{{ card.label }}</h6>
+      <h3 class="mb-0">{{ card.value }}</h3>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-12 col-lg-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Quick Focus</h5>
+        <span class="badge text-bg-light">Today</span>
+      </div>
+      <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action" href="{{ url_for('hunting_payments_list') }}">Review outstanding balances</a>
+        <a class="list-group-item list-group-item-action" href="{{ url_for('hunting_wounded_list') }}">Check wounded follow-ups</a>
+        <a class="list-group-item list-group-item-action" href="{{ url_for('hunting_indemnities_list') }}">Confirm indemnity paperwork</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Quick Actions</h5>
+      </div>
+      <div class="row g-2">
+        <div class="col-6"><a class="btn btn-outline-primary w-100" href="{{ url_for('hunting_hunters_new') }}">Add Hunter</a></div>
+        <div class="col-6"><a class="btn btn-outline-primary w-100" href="{{ url_for('hunting_species_prices_list') }}">Update Pricing</a></div>
+        <div class="col-6"><a class="btn btn-outline-primary w-100" href="{{ url_for('hunting_log_list') }}">Open Log</a></div>
+        <div class="col-6"><a class="btn btn-outline-primary w-100" href="{{ url_for('hunting_payments_list') }}">View Payments</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+  <div>
+    <h4 class="mb-1">Module Sections</h4>
+    <p class="text-secondary mb-0">Open the exact hunting area you want to work in.</p>
+  </div>
+</div>
+
+<div class="row g-3">
+  {% for section in sections %}
+  <div class="col-12 col-md-6 col-xl-3">
+    <a class="card bh-hunting-section p-3 h-100 text-decoration-none text-reset" href="{{ section.href }}">
+      <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+          <h5 class="mb-1">{{ section.title }}</h5>
+          <p class="text-secondary mb-2 small">{{ section.description }}</p>
+          <div class="small text-muted">{{ section.meta }}</div>
+        </div>
+        <span class="bh-hunting-section-icon"><i data-lucide="{{ section.icon }}"></i></span>
+      </div>
+      <div class="mt-auto small fw-semibold">Open section</div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

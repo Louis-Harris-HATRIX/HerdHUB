@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title or 'BoerHUB' }}</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='branding/boerhub-logo.png') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='branding/boerhub-mark.png') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,28 +23,18 @@
     {% if current_user %}
     <div class="bh-shell">
       <aside class="bh-sidebar">
-        <a class="bh-logo-link d-inline-block mb-4" href="{{ url_for('dashboard') }}">
+        <a class="bh-logo-link d-block mb-4" href="{{ url_for('dashboard') }}">
           <img src="{{ url_for('static', filename='branding/boerhub-logo.png') }}" alt="BoerHUB logo">
         </a>
         <nav aria-label="Primary">
-          <a class="bh-nav-link {{ 'active' if request.path in ['/', '/dashboard'] else '' }}" href="{{ url_for('dashboard') }}"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-          <a class="bh-nav-link {{ 'active' if '/animals' in request.path else '' }}" href="{{ url_for('animals_list') }}"><i data-lucide="beef"></i>Animals</a>
-          <a class="bh-nav-link {{ 'active' if '/groups' in request.path else '' }}" href="{{ url_for('groups_list') }}"><i data-lucide="users"></i>Groups</a>
-          <a class="bh-nav-link {{ 'active' if '/camps' in request.path else '' }}" href="{{ url_for('camps_list') }}"><i data-lucide="map-pinned"></i>Camps</a>
-          <a class="bh-nav-link {{ 'active' if '/movements' in request.path else '' }}" href="{{ url_for('movements_list') }}"><i data-lucide="route"></i>Movements</a>
-          <a class="bh-nav-link {{ 'active' if '/health-records' in request.path else '' }}" href="{{ url_for('health_list') }}"><i data-lucide="stethoscope"></i>Health</a>
-          <a class="bh-nav-link {{ 'active' if '/breeding' in request.path else '' }}" href="{{ url_for('breeding_list') }}"><i data-lucide="git-branch-plus"></i>Breeding</a>
-          <a class="bh-nav-link {{ 'active' if '/births' in request.path else '' }}" href="{{ url_for('births_list') }}"><i data-lucide="baby"></i>Births</a>
-          <a class="bh-nav-link {{ 'active' if '/deaths' in request.path else '' }}" href="{{ url_for('deaths_list') }}"><i data-lucide="shield-alert"></i>Losses</a>
-          <a class="bh-nav-link {{ 'active' if '/sales' in request.path else '' }}" href="{{ url_for('sales_list') }}"><i data-lucide="wallet"></i>Sales</a>
-          <a class="bh-nav-link {{ 'active' if '/tasks' in request.path else '' }}" href="{{ url_for('tasks_list') }}"><i data-lucide="check-square"></i>Tasks</a>
-          <a class="bh-nav-link {{ 'active' if '/reports' in request.path else '' }}" href="{{ url_for('reports') }}"><i data-lucide="bar-chart-3"></i>Reports</a>
-          <a class="bh-nav-link {{ 'active' if '/diary' in request.path else '' }}" href="{{ url_for('diary_list') }}"><i data-lucide="book-open-text"></i>Daily Diary</a>
+          <a class="bh-nav-link {{ 'active' if request.path in ['/', '/dashboard'] else '' }}" href="{{ url_for('dashboard') }}"><i data-lucide="house"></i>Home</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/livestock' or request.path.startswith('/animals') or request.path.startswith('/groups') or request.path.startswith('/movements') or request.path.startswith('/health-records') or request.path.startswith('/breeding') or request.path.startswith('/births') or request.path.startswith('/deaths') or request.path.startswith('/sales') else '' }}" href="{{ url_for('livestock_home') }}"><img class="bh-nav-icon-image" src="{{ url_for('static', filename='branding/bull-icon.png', v='20260630') }}" alt="" aria-hidden="true">Livestock</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/wildlife' or request.path == '/hunting' or request.path.startswith('/hunting/bookings') or request.path.startswith('/hunting/hunters') or request.path.startswith('/hunting/indemnities') or request.path.startswith('/hunting/species-prices') or request.path.startswith('/hunting/log') or request.path.startswith('/hunting/wounded') or request.path.startswith('/hunting/payments') else '' }}" href="{{ url_for('hunting_home') }}"><i data-lucide="trees"></i>Wildlife</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/farm-operations' or request.path.startswith('/camps') or request.path.startswith('/tasks') or request.path.startswith('/diary') else '' }}" href="{{ url_for('farm_operations_home') }}"><i data-lucide="tractor"></i>Farm Operations</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/reporting' or request.path == '/reports' or request.path.startswith('/hunting/reports') else '' }}" href="{{ url_for('reports_home') }}"><i data-lucide="bar-chart-3"></i>Reports</a>
           {% if is_admin %}
           <hr class="border-light opacity-25 my-3">
-          <a class="bh-nav-link {{ 'active' if '/users' in request.path else '' }}" href="{{ url_for('users_list') }}"><i data-lucide="user-cog"></i>Users</a>
-          <a class="bh-nav-link {{ 'active' if '/activity' in request.path else '' }}" href="{{ url_for('activity_log') }}"><i data-lucide="list-checks"></i>Activity</a>
-          <a class="bh-nav-link {{ 'active' if '/settings' in request.path else '' }}" href="{{ url_for('settings') }}"><i data-lucide="settings"></i>Settings</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/admin' or request.path.startswith('/users') or request.path.startswith('/activity') or request.path.startswith('/settings') else '' }}" href="{{ url_for('admin_home') }}"><i data-lucide="user-cog"></i>Admin</a>
           {% endif %}
         </nav>
       </aside>
@@ -55,7 +45,9 @@
             <button class="btn btn-outline-secondary btn-sm d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
               <i data-lucide="menu"></i>
             </button>
-            <img class="bh-brand-mark d-lg-none" src="{{ url_for('static', filename='branding/boerhub-icon.svg') }}" alt="BoerHUB icon">
+            <a href="{{ url_for('dashboard') }}" aria-label="Go to Home">
+              <img class="bh-brand-mark d-lg-none" src="{{ url_for('static', filename='branding/boerhub-mark.png') }}" alt="BoerHUB brand mark">
+            </a>
             <div>
             <h1 class="h4 mb-0">{{ title or 'BoerHUB' }}</h1>
             <small class="text-secondary">Role: {{ current_role }}</small>
@@ -88,23 +80,14 @@
       </div>
       <div class="offcanvas-body">
         <nav aria-label="Mobile navigation">
-          <a class="bh-nav-link {{ 'active' if request.path in ['/', '/dashboard'] else '' }}" href="{{ url_for('dashboard') }}"><i data-lucide="layout-dashboard"></i>Dashboard</a>
-          <a class="bh-nav-link {{ 'active' if '/animals' in request.path else '' }}" href="{{ url_for('animals_list') }}"><i data-lucide="beef"></i>Animals</a>
-          <a class="bh-nav-link {{ 'active' if '/groups' in request.path else '' }}" href="{{ url_for('groups_list') }}"><i data-lucide="users"></i>Groups</a>
-          <a class="bh-nav-link {{ 'active' if '/camps' in request.path else '' }}" href="{{ url_for('camps_list') }}"><i data-lucide="map-pinned"></i>Camps</a>
-          <a class="bh-nav-link {{ 'active' if '/movements' in request.path else '' }}" href="{{ url_for('movements_list') }}"><i data-lucide="route"></i>Movements</a>
-          <a class="bh-nav-link {{ 'active' if '/health-records' in request.path else '' }}" href="{{ url_for('health_list') }}"><i data-lucide="stethoscope"></i>Health</a>
-          <a class="bh-nav-link {{ 'active' if '/breeding' in request.path else '' }}" href="{{ url_for('breeding_list') }}"><i data-lucide="git-branch-plus"></i>Breeding</a>
-          <a class="bh-nav-link {{ 'active' if '/births' in request.path else '' }}" href="{{ url_for('births_list') }}"><i data-lucide="baby"></i>Births</a>
-          <a class="bh-nav-link {{ 'active' if '/deaths' in request.path else '' }}" href="{{ url_for('deaths_list') }}"><i data-lucide="shield-alert"></i>Losses</a>
-          <a class="bh-nav-link {{ 'active' if '/sales' in request.path else '' }}" href="{{ url_for('sales_list') }}"><i data-lucide="wallet"></i>Sales</a>
-          <a class="bh-nav-link {{ 'active' if '/tasks' in request.path else '' }}" href="{{ url_for('tasks_list') }}"><i data-lucide="check-square"></i>Tasks</a>
-          <a class="bh-nav-link {{ 'active' if '/reports' in request.path else '' }}" href="{{ url_for('reports') }}"><i data-lucide="bar-chart-3"></i>Reports</a>
-          <a class="bh-nav-link {{ 'active' if '/diary' in request.path else '' }}" href="{{ url_for('diary_list') }}"><i data-lucide="book-open-text"></i>Daily Diary</a>
+          <a class="bh-nav-link {{ 'active' if request.path in ['/', '/dashboard'] else '' }}" href="{{ url_for('dashboard') }}"><i data-lucide="house"></i>Home</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/livestock' or request.path.startswith('/animals') or request.path.startswith('/groups') or request.path.startswith('/movements') or request.path.startswith('/health-records') or request.path.startswith('/breeding') or request.path.startswith('/births') or request.path.startswith('/deaths') or request.path.startswith('/sales') else '' }}" href="{{ url_for('livestock_home') }}"><img class="bh-nav-icon-image" src="{{ url_for('static', filename='branding/bull-icon.png', v='20260630') }}" alt="" aria-hidden="true">Livestock</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/wildlife' or request.path == '/hunting' or request.path.startswith('/hunting/bookings') or request.path.startswith('/hunting/hunters') or request.path.startswith('/hunting/indemnities') or request.path.startswith('/hunting/species-prices') or request.path.startswith('/hunting/log') or request.path.startswith('/hunting/wounded') or request.path.startswith('/hunting/payments') else '' }}" href="{{ url_for('hunting_home') }}"><i data-lucide="trees"></i>Wildlife</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/farm-operations' or request.path.startswith('/camps') or request.path.startswith('/tasks') or request.path.startswith('/diary') else '' }}" href="{{ url_for('farm_operations_home') }}"><i data-lucide="tractor"></i>Farm Operations</a>
+          <a class="bh-nav-link {{ 'active' if request.path == '/reporting' or request.path == '/reports' or request.path.startswith('/hunting/reports') else '' }}" href="{{ url_for('reports_home') }}"><i data-lucide="bar-chart-3"></i>Reports</a>
           {% if is_admin %}
-          <a class="bh-nav-link {{ 'active' if '/users' in request.path else '' }}" href="{{ url_for('users_list') }}"><i data-lucide="user-cog"></i>Users</a>
-          <a class="bh-nav-link {{ 'active' if '/activity' in request.path else '' }}" href="{{ url_for('activity_log') }}"><i data-lucide="list-checks"></i>Activity</a>
-          <a class="bh-nav-link {{ 'active' if '/settings' in request.path else '' }}" href="{{ url_for('settings') }}"><i data-lucide="settings"></i>Settings</a>
+          <hr class="border-light opacity-25 my-3">
+          <a class="bh-nav-link {{ 'active' if request.path == '/admin' or request.path.startswith('/users') or request.path.startswith('/activity') or request.path.startswith('/settings') else '' }}" href="{{ url_for('admin_home') }}"><i data-lucide="user-cog"></i>Admin</a>
           {% endif %}
         </nav>
       </div>

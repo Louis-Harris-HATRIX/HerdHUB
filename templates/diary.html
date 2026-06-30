@@ -1,24 +1,6 @@
 {% extends 'base.html' %}
 {% set title = 'Daily Farm Diary' %}
 {% block content %}
-<div class="card p-3 mb-4">
-  <h5>New diary entry</h5>
-  <form method="post" action="{{ url_for('diary_new') if not item else url_for('diary_edit', entry_id=item.id) }}" class="row g-3">
-    <div class="col-12 col-md-3"><label class="form-label">Date</label><input class="form-control" type="date" name="entry_date" value="{{ item.entry_date if item else '' }}" required></div>
-    <div class="col-12 col-md-3"><label class="form-label">Weather</label><input class="form-control" name="weather" value="{{ item.weather if item else '' }}"></div>
-    <div class="col-12 col-md-3"><label class="form-label">Rainfall</label><input class="form-control" name="rainfall" value="{{ item.rainfall if item else '' }}"></div>
-    <div class="col-12 col-md-3"><label class="form-label">Water points checked</label><input class="form-control" name="water_points_checked" value="{{ item.water_points_checked if item else '' }}"></div>
-    <div class="col-12 col-md-3"><label class="form-label">Grazing condition</label><input class="form-control" name="grazing_condition" value="{{ item.grazing_condition if item else '' }}"></div>
-    <div class="col-12 col-md-3"><label class="form-label">Fence issues</label><input class="form-control" name="fence_issues" value="{{ item.fence_issues if item else '' }}"></div>
-    <div class="col-12 col-md-3"><label class="form-label">Sick animals observed</label><input class="form-control" name="sick_animals_observed" value="{{ item.sick_animals_observed if item else '' }}"></div>
-    <div class="col-12 col-md-3"><label class="form-label">Predator/theft incidents</label><input class="form-control" name="predator_theft_incidents" value="{{ item.predator_theft_incidents if item else '' }}"></div>
-    <div class="col-12 col-md-4"><label class="form-label">Staff attendance notes</label><input class="form-control" name="staff_attendance_notes" value="{{ item.staff_attendance_notes if item else '' }}"></div>
-    <div class="col-12 col-md-4"><label class="form-label">Equipment issues</label><input class="form-control" name="equipment_issues" value="{{ item.equipment_issues if item else '' }}"></div>
-    <div class="col-12 col-md-4"><label class="form-label">Photo upload placeholder</label><input class="form-control" name="photo_placeholder" value="{{ item.photo_placeholder if item else 'Pending' }}"></div>
-    <div class="col-12"><label class="form-label">General notes</label><textarea class="form-control" name="general_notes" rows="3">{{ item.general_notes if item else '' }}</textarea></div>
-    <div class="col-12"><button class="btn btn-primary">Save diary entry</button></div>
-  </form>
-</div>
 <div class="row g-3">
   {% for entry in entries %}
   <div class="col-12">
@@ -51,5 +33,23 @@
     </div>
   </div>
   {% endfor %}
+</div>
+<div class="card p-3 mt-4">
+  <h5>New diary entry</h5>
+  <form method="post" action="{{ url_for('diary_new') if not item else url_for('diary_edit', entry_id=item.id) }}" class="row g-3">
+    <div class="col-12 col-md-3"><label class="form-label">Date</label><input class="form-control" type="date" name="entry_date" value="{{ item.entry_date if item else '' }}" required></div>
+    <div class="col-12 col-md-3"><label class="form-label">Weather</label><input class="form-control" name="weather" value="{{ item.weather if item else '' }}"></div>
+    <div class="col-12 col-md-3"><label class="form-label">Rainfall</label><input class="form-control" name="rainfall" value="{{ item.rainfall if item else '' }}"></div>
+    <div class="col-12 col-md-3"><label class="form-label">Water points checked</label><input class="form-control" name="water_points_checked" value="{{ item.water_points_checked if item else '' }}"></div>
+    <div class="col-12 col-md-3"><label class="form-label">Grazing condition</label><input class="form-control" name="grazing_condition" value="{{ item.grazing_condition if item else '' }}"></div>
+    <div class="col-12 col-md-3"><label class="form-label">Fence issues</label><input class="form-control" name="fence_issues" value="{{ item.fence_issues if item else '' }}"></div>
+    <div class="col-12 col-md-3"><label class="form-label">Sick animals observed</label><input class="form-control" name="sick_animals_observed" value="{{ item.sick_animals_observed if item else '' }}"></div>
+    <div class="col-12 col-md-3"><label class="form-label">Predator/theft incidents</label><input class="form-control" name="predator_theft_incidents" value="{{ item.predator_theft_incidents if item else '' }}"></div>
+    <div class="col-12 col-md-4"><label class="form-label">Staff attendance notes</label><input class="form-control" name="staff_attendance_notes" value="{{ item.staff_attendance_notes if item else '' }}"></div>
+    <div class="col-12 col-md-4"><label class="form-label">Equipment issues</label><input class="form-control" name="equipment_issues" value="{{ item.equipment_issues if item else '' }}"></div>
+    <div class="col-12 col-md-4"><label class="form-label">Photo upload placeholder</label><input class="form-control" name="photo_placeholder" value="{{ item.photo_placeholder if item else 'Pending' }}"></div>
+    <div class="col-12"><label class="form-label">General notes</label><textarea class="form-control" name="general_notes" rows="3">{{ item.general_notes if item else '' }}</textarea></div>
+    <div class="col-12"><button class="btn btn-primary">Save diary entry</button></div>
+  </form>
 </div>
 {% endblock %}

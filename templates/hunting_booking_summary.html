@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% set title = 'Booking Summary' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-12">
+    <div class="card p-3">
+      <h5>Booking details</h5>
+      <div class="row g-2">
+        <div class="col-md-3"><strong>Reference:</strong> {{ booking.booking_reference }}</div>
+        <div class="col-md-3"><strong>Hunter:</strong> {{ booking.hunter_name }}</div>
+        <div class="col-md-3"><strong>Dates:</strong> {{ booking.date_from }} to {{ booking.date_to }}</div>
+        <div class="col-md-3"><strong>Hunting days:</strong> {{ booking.number_of_hunting_days or 0 }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card p-3">
+      <h5>Fee summary (Calculated vs Final)</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Item</th><th>Calculated</th><th>Final</th></tr></thead>
+          <tbody>
+            <tr><td>Day fees</td><td>{{ format_currency(booking.hunting_day_fees_total or 0) }}</td><td>{{ format_currency(booking.final_hunting_day_fees_total or 0) }}</td></tr>
+            <tr><td>Staff fees</td><td>{{ format_currency(booking.staff_fees_total or 0) }}</td><td>{{ format_currency(booking.final_staff_fees_total or 0) }}</td></tr>
+            <tr><td>Accommodation</td><td>{{ format_currency(booking.accommodation_total or 0) }}</td><td>{{ format_currency(booking.final_accommodation_total or 0) }}</td></tr>
+            <tr><td>Animals shot</td><td>{{ format_currency(booking.animals_shot_total or 0) }}</td><td>{{ format_currency(booking.final_animals_shot_total or 0) }}</td></tr>
+            <tr><td>Extras</td><td>{{ format_currency(booking.extras_total or 0) }}</td><td>{{ format_currency(booking.final_extras_total or 0) }}</td></tr>
+            <tr><td><strong>Grand total</strong></td><td><strong>{{ format_currency(booking.grand_total or 0) }}</strong></td><td><strong>{{ format_currency(booking.final_grand_total or 0) }}</strong></td></tr>
+            <tr><td>Deposit paid</td><td colspan="2">{{ format_currency(booking.deposit_paid or 0) }}</td></tr>
+            <tr><td><strong>Balance due</strong></td><td>{{ format_currency(booking.balance_due or 0) }}</td><td><strong>{{ format_currency(booking.final_balance_due or 0) }}</strong></td></tr>
+            <tr><td>Payment status</td><td colspan="2">{{ booking.payment_status|title }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      {% if booking.fee_override_enabled %}
+      <p class="mb-0"><strong>Override reason:</strong> {{ booking.override_notes or '-' }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card p-3">
+      <h5>Species / animals shot</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Date</th><th>Species</th><th>Outcome</th><th>Price</th><th>Recovered</th></tr></thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.date }}</td>
+              <td>{{ log.species }}</td>
+              <td>{{ log.outcome|title }}</td>
+              <td>{{ format_currency(log.price_charged or 0) }}</td>
+              <td>{{ 'Yes' if log.recovered else 'No' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-secondary">No hunting log records found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card p-3">
+      <h5>Wounded animals</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Species</th><th>Date</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody>
+            {% for row in wounded %}
+            <tr>
+              <td>{{ row.species }}</td>
+              <td>{{ row.date_wounded or '-' }}</td>
+              <td>{{ row.follow_up_status|replace('_', ' ')|title }}</td>
+              <td>{{ row.notes or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-secondary">No wounded follow-up records found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

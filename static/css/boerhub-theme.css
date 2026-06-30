@@ -74,7 +74,14 @@ body {
 
 .bh-sidebar .bh-logo-link img {
   max-width: 172px;
+  display: block;
+  margin-inline: auto;
   height: auto;
+}
+
+.bh-logo-link {
+  display: block;
+  text-align: center;
 }
 
 .bh-nav-link {
@@ -87,6 +94,32 @@ body {
   text-decoration: none;
   margin-bottom: 0.25rem;
   transition: all 180ms ease;
+}
+
+.bh-nav-link .lucide,
+.bh-nav-icon-svg,
+.bh-nav-icon-image {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.bh-nav-icon-image,
+.bh-module-card-icon.bh-icon-image {
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.bh-module-card-icon {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  flex-shrink: 0;
+  display: block;
 }
 
 .bh-nav-link:hover {
@@ -114,6 +147,16 @@ body {
   color: var(--bh-primary);
   background: color-mix(in srgb, var(--bh-primary) 12%, white);
   outline: 1px solid color-mix(in srgb, var(--bh-primary) 24%, white);
+}
+
+.offcanvas .offcanvas-header {
+  justify-content: center;
+  position: relative;
+}
+
+.offcanvas .offcanvas-header .btn-close {
+  position: absolute;
+  right: 1rem;
 }
 
 .bh-content-wrap {
@@ -202,7 +245,8 @@ body {
   min-height: 132px;
 }
 
-.bh-splash {
+.bh-splash,
+.hh-splash {
   position: fixed;
   inset: 0;
   display: flex;
@@ -214,12 +258,15 @@ body {
   transition: opacity 240ms ease;
 }
 
-.bh-splash.is-hidden {
+.bh-splash.is-hidden,
+.hh-splash.is-hidden {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
 }
 
-.bh-splash img {
+.bh-splash img,
+.hh-splash img {
   width: min(320px, 66vw);
   height: auto;
 }
@@ -241,17 +288,104 @@ body {
 }
 
 .bh-login-wrap {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 3rem);
   display: grid;
   place-items: center;
+  padding: var(--bh-space-4);
 }
 
 .bh-login-card {
-  width: min(960px, 100%);
+  width: min(480px, 100%);
 }
 
 .bh-logo-sm {
   max-width: 220px;
+  display: block;
+  margin-inline: auto;
+}
+
+.bh-login-header h2 {
+  font-weight: 600;
+}
+
+.bh-login-header .bh-logo-sm {
+  max-width: 130px;
+  width: 100%;
+  height: auto;
+}
+
+.bh-hunting-kpi {
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid color-mix(in srgb, var(--bh-primary) 65%, white);
+}
+
+.bh-hunting-kpi::after {
+  content: "";
+  position: absolute;
+  right: -24px;
+  top: -24px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  opacity: 0.18;
+}
+
+.bh-hunting-section {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.bh-hunting-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--bh-shadow-sm);
+}
+
+.bh-hunting-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--bh-background) 75%, white);
+  color: var(--bh-primary);
+}
+
+.bh-hunting-section-icon .lucide {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.bh-password-field {
+  position: relative;
+}
+
+.bh-password-field .form-control {
+  padding-right: 2.75rem;
+}
+
+.bh-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--bh-text-muted);
+  padding: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bh-password-toggle:hover {
+  color: var(--bh-primary);
+}
+
+.bh-password-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--bh-primary) 50%, white);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 @media (max-width: 991.98px) {
@@ -274,6 +408,28 @@ body {
   .bh-topbar .btn .lucide {
     width: 16px;
     height: 16px;
+  }
+
+}
+
+@media (max-width: 575.98px), (max-height: 760px) {
+  .bh-login-wrap {
+    min-height: auto;
+    place-items: start center;
+    padding: 0.5rem;
+  }
+
+  .bh-login-card {
+    width: 100%;
+    padding: 1rem !important;
+  }
+
+  .bh-login-header {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .bh-login-header .bh-logo-sm {
+    max-width: 96px;
   }
 }
 

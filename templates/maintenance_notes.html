@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% set title = 'Maintenance Notes' %}
+{% block content %}
+{% set form_values = form_values or {} %}
+{% set form_errors = form_errors or {} %}
+<div class="row g-4">
+  <div class="col-12 order-1">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Maintenance notes</h5>
+        <form class="d-flex gap-2" method="get">
+          <input class="form-control" name="q" placeholder="Search maintenance" value="{{ q }}">
+          <button class="btn btn-outline-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Date</th><th>Asset / Area</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {% for row in items %}
+            <tr>
+              <td>{{ row.note_date }}</td>
+              <td>{{ row.asset_or_area }}</td>
+              <td>{{ row.priority|title }}</td>
+              <td>{{ row.status|replace('_', ' ')|title }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('maintenance_notes_edit', item_id=row.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('maintenance_notes_delete', item_id=row.id) }}" style="display:inline" onsubmit="return confirm('Archive this maintenance note?');"><button class="btn btn-sm btn-outline-danger">Delete</button></form>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-secondary">No maintenance notes found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 order-2">
+    <div class="card p-3">
+      <h5>{{ 'Edit maintenance note' if item else 'Add maintenance note' }}</h5>
+      <p class="text-secondary small mb-3">Record the affected asset or area clearly. Completed items must include the date the work was finished.</p>
+      {% if form_errors %}
+      <div class="alert alert-warning py-2">Please fix the highlighted fields and try again.</div>
+      {% endif %}
+      <form method="post" action="{{ url_for('maintenance_notes_edit', item_id=item.id) if item else url_for('maintenance_notes_new') }}">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-note-date">Date logged</label>
+            <input class="form-control {{ 'is-invalid' if form_errors.get('note_date') else '' }}" id="maintenance-note-date" type="date" name="note_date" value="{{ form_values.get('note_date', item.note_date if item else '') }}" required>
+            {% if form_errors.get('note_date') %}<div class="invalid-feedback">{{ form_errors.get('note_date') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-asset">Asset or area</label>
+            <input class="form-control {{ 'is-invalid' if form_errors.get('asset_or_area') else '' }}" id="maintenance-asset" name="asset_or_area" placeholder="Water pump, boundary fence, camp gate" value="{{ form_values.get('asset_or_area', item.asset_or_area if item else '') }}" required>
+            {% if form_errors.get('asset_or_area') %}<div class="invalid-feedback">{{ form_errors.get('asset_or_area') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-camp">Camp</label>
+            <select class="form-select" id="maintenance-camp" name="camp_id"><option value="">Camp (optional)</option>{% for camp in camps %}<option value="{{ camp.id }}" {% if form_values.get('camp_id', item.camp_id if item else '') == camp.id|string %}selected{% endif %}>{{ camp.name }}</option>{% endfor %}</select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-issue-type">Issue type</label>
+            <input class="form-control" id="maintenance-issue-type" name="issue_type" placeholder="Water, fencing, vehicles, buildings" value="{{ form_values.get('issue_type', item.issue_type if item else 'general') }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-priority">Priority</label>
+            <select class="form-select {{ 'is-invalid' if form_errors.get('priority') else '' }}" id="maintenance-priority" name="priority"><option value="low" {% if form_values.get('priority', item.priority if item else 'medium') == 'low' %}selected{% endif %}>Low</option><option value="medium" {% if form_values.get('priority', item.priority if item else 'medium') == 'medium' %}selected{% endif %}>Medium</option><option value="high" {% if form_values.get('priority', item.priority if item else 'medium') == 'high' %}selected{% endif %}>High</option></select>
+            {% if form_errors.get('priority') %}<div class="invalid-feedback">{{ form_errors.get('priority') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-status">Status</label>
+            <select class="form-select {{ 'is-invalid' if form_errors.get('status') else '' }}" id="maintenance-status" name="status" aria-describedby="maintenance-status-help"><option value="open" {% if form_values.get('status', item.status if item else 'open') == 'open' %}selected{% endif %}>Open</option><option value="in_progress" {% if form_values.get('status', item.status if item else 'open') == 'in_progress' %}selected{% endif %}>In progress</option><option value="completed" {% if form_values.get('status', item.status if item else 'open') == 'completed' %}selected{% endif %}>Completed</option></select>
+            <div id="maintenance-status-help" class="form-text">Completed items must include a completed date below.</div>
+            {% if form_errors.get('status') %}<div class="invalid-feedback d-block">{{ form_errors.get('status') }}</div>{% endif %}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-assigned">Assigned to</label>
+            <input class="form-control" id="maintenance-assigned" name="assigned_to" placeholder="Person or contractor" value="{{ form_values.get('assigned_to', item.assigned_to if item else '') }}">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="maintenance-completed-date">Completed date</label>
+            <input class="form-control {{ 'is-invalid' if form_errors.get('completed_date') else '' }}" id="maintenance-completed-date" type="date" name="completed_date" value="{{ form_values.get('completed_date', item.completed_date if item else '') }}" aria-describedby="maintenance-completed-help">
+            <div id="maintenance-completed-help" class="form-text">Leave blank until the work is actually finished.</div>
+            {% if form_errors.get('completed_date') %}<div class="invalid-feedback d-block">{{ form_errors.get('completed_date') }}</div>{% endif %}
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="maintenance-details">Details</label>
+            <textarea class="form-control {{ 'is-invalid' if form_errors.get('details') else '' }}" id="maintenance-details" rows="3" name="details" placeholder="Describe the problem, safety risk, and required repair or replacement" required>{{ form_values.get('details', item.details if item else '') }}</textarea>
+            {% if form_errors.get('details') %}<div class="invalid-feedback">{{ form_errors.get('details') }}</div>{% endif %}
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="maintenance-notes">Additional notes</label>
+            <textarea class="form-control" id="maintenance-notes" rows="2" name="notes" placeholder="Parts used, supplier quotes, or follow-up reminders">{{ form_values.get('notes', item.notes if item else '') }}</textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary mt-3">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var statusField = document.getElementById('maintenance-status');
+    var completedField = document.getElementById('maintenance-completed-date');
+    var completedHelp = document.getElementById('maintenance-completed-help');
+    if (!statusField || !completedField || !completedHelp) return;
+
+    function syncCompletedRequirement() {
+      if (statusField.value === 'completed') {
+        completedField.required = true;
+        completedHelp.textContent = 'Required when the status is Completed.';
+      } else {
+        completedField.required = false;
+        completedHelp.textContent = 'Leave blank until the work is actually finished.';
+      }
+    }
+
+    statusField.addEventListener('change', syncCompletedRequirement);
+    syncCompletedRequirement();
+  })();
+</script>
+{% endblock %}
