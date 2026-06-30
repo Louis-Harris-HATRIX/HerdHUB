@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const splash = document.getElementById('herdhub-splash');
+  const splash = document.getElementById('boerhub-splash');
   if (splash) {
     window.setTimeout(function () {
       splash.classList.add('is-hidden');

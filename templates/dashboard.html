@@ -4,7 +4,7 @@
 <div class="card p-3 p-md-4 mb-4">
   <div class="row g-3 align-items-center">
     <div class="col-12 col-lg-7">
-      <img class="hh-logo-sm mb-3" src="{{ url_for('static', filename='branding/herdhub-logo.png') }}" alt="HerdHUB logo">
+      <img class="bh-logo-sm mb-3" src="{{ url_for('static', filename='branding/boerhub-logo.png') }}" alt="BoerHUB logo">
       <h2 class="h4 mb-2">Livestock Operations Overview</h2>
       <p class="text-secondary mb-0">A live view of animals, treatments, tasks, and operational alerts.</p>
     </div>
@@ -23,7 +23,7 @@
 <div class="row g-3 mb-4">
   {% for label, value in [('Cattle', total_by_species['cattle']), ('Sheep', total_by_species['sheep']), ('Goats', total_by_species['goat'])] %}
   <div class="col-12 col-md-4">
-    <div class="card hh-kpi-card p-3">
+    <div class="card bh-kpi-card p-3">
       <h6 class="text-muted">{{ label }}</h6>
       <h2 class="display-6">{{ value }}</h2>
     </div>
@@ -194,3 +194,4 @@
   </div>
 </div>
 {% endblock %}
+

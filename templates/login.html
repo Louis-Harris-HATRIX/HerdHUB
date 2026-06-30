@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% set title = 'Sign in' %}
 {% block content %}
-<div class="hh-login-wrap">
-  <div class="card hh-login-card overflow-hidden">
+<div class="bh-login-wrap">
+  <div class="card bh-login-card overflow-hidden">
     <div class="row g-0">
       <div class="col-12 col-lg-6 p-4 p-lg-5 border-end">
-        <img class="hh-logo-sm mb-4" src="{{ url_for('static', filename='branding/herdhub-logo.png') }}" alt="HerdHUB logo">
-        <h2 class="h3 mb-3">Welcome to HerdHUB</h2>
+        <img class="bh-logo-sm mb-4" src="{{ url_for('static', filename='branding/boerhub-logo.png') }}" alt="BoerHUB logo">
+        <h2 class="h3 mb-3">Welcome to BoerHUB</h2>
         <p class="text-secondary mb-4">Premium livestock management for modern farm operations.</p>
         <ul class="list-unstyled small text-secondary mb-0">
           <li class="mb-2">Operational dashboards and analytics</li>
@@ -16,7 +16,7 @@
       </div>
       <div class="col-12 col-lg-6 p-4 p-lg-5">
         <h4 class="mb-3">Sign in</h4>
-        <p class="text-secondary mb-4">Use your HerdHUB account credentials.</p>
+        <p class="text-secondary mb-4">Use your BoerHUB account credentials.</p>
         <form method="post" action="{{ url_for('login') }}">
           <input type="hidden" name="next" value="{{ request.args.get('next', request.form.get('next', '')) }}">
           <div class="mb-3">
@@ -27,7 +27,7 @@
             <label class="form-label" for="password">Password</label>
             <input class="form-control" id="password" type="password" name="password" required autocomplete="current-password">
           </div>
-          <button class="btn btn-primary w-100" type="submit">Sign in to HerdHUB</button>
+          <button class="btn btn-primary w-100" type="submit">Sign in to BoerHUB</button>
         </form>
         <div class="mt-3 small text-secondary">Default seeded owner: owner / owner123 (override with OWNER_USERNAME and OWNER_PASSWORD).</div>
       </div>
@@ -35,3 +35,4 @@
   </div>
 </div>
 {% endblock %}
+

@@ -1,4 +1,6 @@
-# QA Checklist
+# BoerHUB QA Checklist
+
+Branding asset reference: `static/branding/boerhub-logo.png`
 
 ## Animal Photo Functionality QA
 

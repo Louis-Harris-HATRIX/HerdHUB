@@ -1,5 +1,7 @@
 # BoerHUB Flask Livestock Management
 
+Official branding logo: `static/branding/boerhub-logo.png`
+
 ## Local Run
 1. Install dependencies:
    - `pip install -r requirements.txt`
