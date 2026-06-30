@@ -74,3 +74,4 @@ Optional seed overrides:
 - Allowed image types: `jpg`, `jpeg`, `png`, `webp`.
 - Maximum upload size: 5MB.
 - Upload endpoints are role-protected (`admin` and `manager`).
+Workflow test: 2026-06-30
